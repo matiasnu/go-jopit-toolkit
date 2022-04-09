@@ -14,7 +14,7 @@ import (
 	"github.com/matiasnu/go-jopit-toolkit/rest/retry"
 )
 
-const BASE_URL string = "http://internal.mercadolibre.com"
+const BASE_URL string = "http://internal.jopit.com"
 
 type authRequestData struct {
 	UserId     *string `json:"user_id"`
