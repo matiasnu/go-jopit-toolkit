@@ -15,6 +15,8 @@ import (
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var production bool = os.Getenv("GO_ENVIRONMENT") == "production"
@@ -46,6 +48,9 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	if !conf.DisableHeaderForwarding {
 		router.Use(HeaderForwarding())
 	}
+	if !conf.DisableSwagger {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 	if !production {
 		router.Use(gin.Logger())
 	}
@@ -59,6 +64,7 @@ type JopitRouterConfig struct {
 	DisablePprof                     bool
 	EnableResponseCompressionSupport bool
 	DisableHeaderForwarding          bool
+	DisableSwagger                   bool
 
 	// DisableCommonApiFilterErrorLog tells the Common Api Filter to omit logging the URI in error handling.
 	// This is useful when some params or query params are private data, like tokens.
