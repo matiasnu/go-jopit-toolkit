@@ -27,7 +27,7 @@ func Create(ret *interface{}) error {
 }
 
 func GetByID(id string, ret interface{}) (interface{}, error) {
-	err := data.DB.Where("id = ?", id).First(ret).Error
+	err := data.DB.Where("id = ?", id).First(&ret).Error
 	if err != nil {
 		return ret, err
 	}
