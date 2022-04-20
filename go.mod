@@ -43,6 +43,7 @@ require (
 require (
 	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/pprof v1.3.0
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mattn/go-colorable v0.1.12 // indirect
