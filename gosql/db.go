@@ -13,7 +13,8 @@ var (
 )
 
 type Data struct {
-	DB *gorm.DB
+	DB    *gorm.DB
+	Error error
 }
 
 type QueryBuilder struct{}
@@ -54,11 +55,13 @@ func GetConnection(jopitDBConfig JopitDBConfig) (*gorm.DB, error) {
 }
 
 func InitSQL(jopitDBConfig JopitDBConfig) {
+	var errDB error
 	db, err := GetConnection(jopitDBConfig)
 	if err != nil {
-		fmt.Printf("Error MySQL connection : %s", err)
+		errDB = fmt.Errorf("Error MySQL connection: %s", err)
 	}
 	data = &Data{
-		DB: db,
+		DB:    db,
+		Error: errDB,
 	}
 }
