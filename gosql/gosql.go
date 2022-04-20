@@ -7,47 +7,47 @@ package gosql
 //var dfltBuilder = QueryBuilder{}
 
 type Repository interface {
-	GetByID(id string, ret interface{}) (interface{}, error)
+	GetByID(id string, models interface{}) (interface{}, error)
 }
 
-func GetAll(ret []interface{}) ([]interface{}, error) {
-	err := data.DB.Find(&ret).Error
+func GetAll(models []interface{}) ([]interface{}, error) {
+	err := data.DB.Find(&models).Error
 	if err != nil {
 		return nil, err
 	}
-	return ret, nil
+	return models, nil
 }
 
-func Create(ret *interface{}) error {
-	err := data.DB.Create(&ret).Error
+func Create(models *interface{}) error {
+	err := data.DB.Create(&models).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetByID(id string, ret interface{}) (interface{}, error) {
-	err := data.DB.Where("id = ?", id).First(&ret).Error
+func GetByID(id string, models interface{}) (interface{}, error) {
+	err := data.DB.Where("id = ?", id).Find(&models).Error
 	if err != nil {
-		return ret, err
+		return nil, err
 	}
-	return ret, nil
+	return models, nil
 }
 
-func DeleteByID(id string, ret interface{}) error {
-	err := data.DB.Delete(ret, id).Error
+func DeleteByID(id string, models interface{}) error {
+	err := data.DB.Delete(models, id).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateByID(retUpdate *interface{}, id int) (interface{}, error) {
-	if err := data.DB.Where("id = ?", id).First(&retUpdate).Error; err != nil {
-		return retUpdate, err
+func UpdateByID(modelsUpdate *interface{}, id int) (interface{}, error) {
+	if err := data.DB.Where("id = ?", id).First(&modelsUpdate).Error; err != nil {
+		return modelsUpdate, err
 	}
-	if err := data.DB.Model(&retUpdate).Updates(retUpdate).Error; err != nil {
-		return retUpdate, err
+	if err := data.DB.Model(&modelsUpdate).Updates(modelsUpdate).Error; err != nil {
+		return modelsUpdate, err
 	}
-	return retUpdate, nil
+	return modelsUpdate, nil
 }

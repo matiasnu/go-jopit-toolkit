@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/jinzhu/gorm"
+	"gorm.io/gorm/clause"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -14,6 +15,8 @@ var (
 	data *Data
 	once sync.Once
 )
+
+const defaultPreload = clause.Associations
 
 type Data struct {
 	DB    *gorm.DB
