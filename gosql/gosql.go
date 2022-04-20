@@ -8,9 +8,10 @@ package gosql
 
 type Repository interface {
 	GetByID(id string, models interface{}) (interface{}, error)
+	DeleteByID(id string, models interface{}) error
 }
 
-func GetAll(models []interface{}) ([]interface{}, error) {
+func GetAll(models interface{}) (interface{}, error) {
 	err := data.DB.Find(&models).Error
 	if err != nil {
 		return nil, err
@@ -27,7 +28,7 @@ func Create(models *interface{}) error {
 }
 
 func GetByID(id string, models interface{}) (interface{}, error) {
-	err := data.DB.Find(models).Error
+	err := data.DB.Where("id = ?", id).Find(models).Error
 	if err != nil {
 		return nil, err
 	}
