@@ -27,7 +27,7 @@ func Create(models *interface{}) error {
 }
 
 func GetByID(id string, models interface{}) (interface{}, error) {
-	err := data.DB.Preload(defaultPreload).Find(models).Error
+	err := data.DB.Find(models).Error
 	if err != nil {
 		return nil, err
 	}
