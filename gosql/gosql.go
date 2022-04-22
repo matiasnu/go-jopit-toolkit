@@ -52,3 +52,19 @@ func UpdateByID(modelsUpdate *interface{}, id int) (interface{}, error) {
 	}
 	return modelsUpdate, nil
 }
+
+func rawQueryBuild(query string, models interface{}) (interface{}, error) {
+	err := data.DB.Raw(query).Scan(&models).Error
+	if err != nil {
+		return nil, err
+	}
+	return models, nil
+}
+
+func execQueryBuild(query string) error {
+	err := data.DB.Exec(query).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -23,8 +23,6 @@ type Data struct {
 	Error error
 }
 
-type QueryBuilder struct{}
-
 type JopitDBConfig struct {
 	Username string
 	Password string
