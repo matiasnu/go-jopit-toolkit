@@ -19,8 +19,8 @@ func GetAll(models interface{}) (interface{}, error) {
 	return models, nil
 }
 
-func Create(models *interface{}) error {
-	err := data.DB.Create(&models).Error
+func Create(models interface{}) error {
+	err := data.DB.Create(models).Error
 	if err != nil {
 		return err
 	}
