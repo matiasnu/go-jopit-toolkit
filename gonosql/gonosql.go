@@ -8,11 +8,11 @@ import (
 )
 
 type Repository interface {
-	InsertOne(models interface{}, filter primitive.M) (*mongo.InsertOneResult, error)
+	InsertOne(models interface{}) (*mongo.InsertOneResult, error)
 	GetByFilter(filter primitive.M) (*mongo.Cursor, error)
 }
 
-func InsertOne(models interface{}, filter primitive.M) (*mongo.InsertOneResult, error) {
+func InsertOne(models interface{}) (*mongo.InsertOneResult, error) {
 	result, err := collection.InsertOne(context.TODO(), models)
 	if err != nil {
 		return nil, err
