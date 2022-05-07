@@ -3,13 +3,13 @@ package gonosql
 import (
 	"context"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type Repository interface {
 	InsertOne(models interface{}) (*mongo.InsertOneResult, error)
-	GetByFilter(filter primitive.M) (*mongo.Cursor, error)
+	GetByFilter(filter bson.M) (*mongo.Cursor, error)
 }
 
 func InsertOne(models interface{}) (*mongo.InsertOneResult, error) {
@@ -20,7 +20,7 @@ func InsertOne(models interface{}) (*mongo.InsertOneResult, error) {
 	return result, nil
 }
 
-func GetByFilter(filter primitive.M) (*mongo.Cursor, error) {
+func GetByFilter(filter bson.M) (*mongo.Cursor, error) {
 	cursor, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
