@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/matiasnu/go-jopit-toolkit/goutils/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	data *Data
-	once sync.Once
+	data       *Data
+	once       sync.Once
+	collection *mongo.Collection
 )
 
 type Data struct {
@@ -20,20 +22,24 @@ type Data struct {
 }
 
 type JopitDBConfig struct {
-	Username string
-	Password string
-	Host     string
-	Port     int
-	Database string
+	Username   string
+	Password   string
+	Host       string
+	Port       int
+	Database   string
+	Collection string
 }
 
 // Close closes the resources used by data.
-func (d *Data) Close(ctx context.Context) error {
+func (d *Data) Close(ctx context.Context) {
 	if data == nil {
-		return nil
+		return
 	}
 
-	return data.DB.Disconnect(ctx)
+	if err := data.DB.Disconnect(ctx); err != nil {
+		logger.Errorf("Error disconect DB", err)
+	}
+	logger.Debugf("Connection close sucessfully")
 }
 
 func NewNoSQL(jopitDBConfig JopitDBConfig) *Data {
@@ -66,6 +72,7 @@ func InitNoSQL(jopitDBConfig JopitDBConfig) {
 	if err = db.Ping(context.TODO(), nil); err != nil {
 		errDB = fmt.Errorf("Error NoSQL connection: %s", err)
 	}
+	collection = data.DB.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
 	data = &Data{
 		DB:    db,
 		Error: errDB,
