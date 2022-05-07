@@ -36,7 +36,7 @@ func (d *Data) Close(ctx context.Context) error {
 	return data.DB.Disconnect(ctx)
 }
 
-func NewSQL(jopitDBConfig JopitDBConfig) *Data {
+func NewNoSQL(jopitDBConfig JopitDBConfig) *Data {
 	once.Do(func() {
 		InitNoSQL(jopitDBConfig)
 	})
