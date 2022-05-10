@@ -9,16 +9,17 @@ package gosql
 type Repository interface {
 	GetByID(storage Data, id string, models interface{}) error
 	DeleteByID(storage Data, id string, models interface{}) error
-	GetAll(storage Data, models interface{}) (interface{}, error)
+	GetAll(storage Data, models interface{}) error
 	Create(storage Data, models interface{}) error
+	UpdateByID(modelsUpdate interface{}, id int) error
 }
 
-func GetAll(storage Data, models interface{}) (interface{}, error) {
+func GetAll(storage Data, models interface{}) error {
 	err := storage.DB.Find(models).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return models, nil
+	return nil
 }
 
 func Create(storage Data, models interface{}) error {
@@ -45,14 +46,14 @@ func DeleteByID(storage Data, id string, models interface{}) error {
 	return nil
 }
 
-func UpdateByID(modelsUpdate interface{}, id int) (interface{}, error) {
+func UpdateByID(modelsUpdate interface{}, id int) error {
 	if err := data.DB.Where("id = ?", id).First(modelsUpdate).Error; err != nil {
-		return modelsUpdate, err
+		return err
 	}
 	if err := data.DB.Model(modelsUpdate).Updates(modelsUpdate).Error; err != nil {
-		return modelsUpdate, err
+		return err
 	}
-	return modelsUpdate, nil
+	return nil
 }
 
 func rawQueryBuild(storage Data, query string, models interface{}) (interface{}, error) {
