@@ -29,7 +29,7 @@ func Create(storage Data, models interface{}) error {
 	return nil
 }
 
-func GetByID(storage Data, id string, models interface{}) (interface{}, error) {
+func GetByID(storage Data, id string, *models interface{}) (interface{}, error) {
 	err := storage.DB.Where("id = ?", id).Find(models).Error
 	if err != nil {
 		return nil, err
