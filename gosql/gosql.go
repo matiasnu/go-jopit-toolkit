@@ -22,7 +22,7 @@ func GetAll(storage Data, models interface{}) (interface{}, error) {
 }
 
 func Create(storage Data, models interface{}) error {
-	err := storage.DB.Create(models).Error
+	err := storage.DB.Create(&models).Error
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func Create(storage Data, models interface{}) error {
 }
 
 func GetByID(storage Data, id string, models interface{}) (interface{}, error) {
-	err := storage.DB.Where("id = ?", id).Find(models).Error
+	err := storage.DB.Where("id = ?", id).Find(&models).Error
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func GetByID(storage Data, id string, models interface{}) (interface{}, error) {
 }
 
 func DeleteByID(storage Data, id string, models interface{}) error {
-	err := storage.DB.Delete(models, id).Error
+	err := storage.DB.Delete(&models, id).Error
 	if err != nil {
 		return err
 	}
@@ -46,10 +46,10 @@ func DeleteByID(storage Data, id string, models interface{}) error {
 }
 
 func UpdateByID(modelsUpdate interface{}, id int) (interface{}, error) {
-	if err := data.DB.Where("id = ?", id).First(modelsUpdate).Error; err != nil {
+	if err := data.DB.Where("id = ?", id).First(&modelsUpdate).Error; err != nil {
 		return modelsUpdate, err
 	}
-	if err := data.DB.Model(modelsUpdate).Updates(modelsUpdate).Error; err != nil {
+	if err := data.DB.Model(modelsUpdate).Updates(&modelsUpdate).Error; err != nil {
 		return modelsUpdate, err
 	}
 	return modelsUpdate, nil
