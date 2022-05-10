@@ -7,7 +7,7 @@ package gosql
 //var dfltBuilder = QueryBuilder{}
 
 type Repository interface {
-	GetByID(storage Data, id string, models interface{}) (interface{}, error)
+	GetByID(storage Data, id string, models interface{}) error
 	DeleteByID(storage Data, id string, models interface{}) error
 	GetAll(storage Data, models interface{}) (interface{}, error)
 	Create(storage Data, models interface{}) error
@@ -29,12 +29,12 @@ func Create(storage Data, models interface{}) error {
 	return nil
 }
 
-func GetByID(storage Data, id string, models *interface{}) (interface{}, error) {
+func GetByID(storage Data, id string, models interface{}) error {
 	err := storage.DB.Where("id = ?", id).Find(models).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return models, nil
+	return nil
 }
 
 func DeleteByID(storage Data, id string, models interface{}) error {
