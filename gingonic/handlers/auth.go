@@ -1,12 +1,19 @@
 package handlers
 
 import (
+	"context"
+	"log"
 	"net/http"
+	"strings"
+	"sync"
 
+	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/matiasnu/go-jopit-toolkit/goauth"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"github.com/matiasnu/go-jopit-toolkit/tracing"
+	"google.golang.org/api/option"
 )
 
 func JopitAuth(scopes []string) gin.HandlerFunc {
@@ -40,4 +47,55 @@ func HeaderForwarding() gin.HandlerFunc {
 		ctx := tracing.ContextFromRequest(c.Request)
 		c.Request = c.Request.WithContext(ctx)
 	}
+}
+
+// ========================================================= FIREBASE AUTH =========================================================
+var (
+	firebaseClient *FirebaseClient
+	once           sync.Once
+)
+
+type FirebaseClient struct {
+	AuthClient *auth.Client
+}
+
+//initiates the firebase client ONCE
+func Newfirebase() *FirebaseClient {
+	once.Do(InitFirebase)
+
+	return firebaseClient
+}
+
+func InitFirebase() {
+
+	opt := option.WithCredentialsFile("credentials.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Println("Error connecting to firebase" + err.Error())
+	}
+
+	auth, err2 := app.Auth(context.Background())
+	if err2 != nil {
+		log.Println("Error connecting to firebase" + err2.Error())
+	}
+
+	firebaseClient = &FirebaseClient{
+		AuthClient: auth,
+	}
+}
+
+func AuthWithFirebase(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		header := r.Header.Get("HeaderAuthorization")
+		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
+		_, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
+		if err != nil {
+			w.WriteHeader(401)
+			w.Write([]byte("Error getting the token.\n" + err.Error()))
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
