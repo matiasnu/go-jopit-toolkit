@@ -85,7 +85,7 @@ func InitFirebase() {
 }
 
 func AuthWithFirebase(next gin.HandlerFunc) gin.HandlerFunc {
-	return gin.HandlerFunc(func(c *gin.Context) {
+	return func(c *gin.Context) {
 
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
@@ -97,5 +97,5 @@ func AuthWithFirebase(next gin.HandlerFunc) gin.HandlerFunc {
 		}
 
 		c.Next()
-	})
+	}
 }
