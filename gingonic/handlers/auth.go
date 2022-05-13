@@ -84,18 +84,18 @@ func InitFirebase() {
 	}
 }
 
-func AuthWithFirebase(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func AuthWithFirebase(next gin.HandlerFunc) gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
 
-		header := r.Header.Get("HeaderAuthorization")
+		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		_, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			w.WriteHeader(401)
-			w.Write([]byte("Error getting the token.\n" + err.Error()))
+			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
+			c.JSON(apiErr.Status(), apiErr)
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		c.Next()
 	})
 }
