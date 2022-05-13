@@ -92,7 +92,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 		_, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
 			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
-			c.JSON(apiErr.Status(), apiErr)
+			c.AbortWithError(401, apiErr)
 			return
 		}
 
