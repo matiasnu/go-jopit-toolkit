@@ -84,7 +84,7 @@ func InitFirebase() {
 	}
 }
 
-func AuthWithFirebase(next gin.HandlerFunc) gin.HandlerFunc {
+func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		header := c.GetHeader("HeaderAuthorization")
