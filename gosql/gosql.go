@@ -7,11 +7,11 @@ package gosql
 //var dfltBuilder = QueryBuilder{}
 
 type Repository interface {
-	GetByID(storage Data, id string, models interface{}) error
-	DeleteByID(storage Data, id string, models interface{}) error
+	Get(storage Data, id string, models interface{}) error
+	Delete(storage Data, id string, models interface{}) error
 	GetAll(storage Data, models interface{}) error
 	Create(storage Data, models interface{}) error
-	UpdateByID(modelsUpdate interface{}, id int) error
+	Update(modelsUpdate interface{}, id int) error
 }
 
 func GetAll(storage Data, models interface{}) error {
@@ -30,7 +30,7 @@ func Create(storage Data, models interface{}) error {
 	return nil
 }
 
-func GetByID(storage Data, id string, models interface{}) error {
+func Get(storage Data, id string, models interface{}) error {
 	err := storage.DB.Where("id = ?", id).Find(models).Error
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func GetByID(storage Data, id string, models interface{}) error {
 	return nil
 }
 
-func DeleteByID(storage Data, id string, models interface{}) error {
+func Delete(storage Data, id string, models interface{}) error {
 	err := storage.DB.Delete(models, id).Error
 	if err != nil {
 		return err
@@ -46,7 +46,7 @@ func DeleteByID(storage Data, id string, models interface{}) error {
 	return nil
 }
 
-func UpdateByID(modelsUpdate interface{}, id int) error {
+func Update(storage Data, modelsUpdate interface{}, id int) error {
 	if err := data.DB.Where("id = ?", id).First(modelsUpdate).Error; err != nil {
 		return err
 	}

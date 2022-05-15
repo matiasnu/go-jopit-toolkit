@@ -11,14 +11,14 @@ import (
 )
 
 var (
-	data       *Data
-	once       sync.Once
-	collection *mongo.Collection
+	data *Data
+	once sync.Once
 )
 
 type Data struct {
-	DB    *mongo.Client
-	Error error
+	DB         *mongo.Client
+	Collection *mongo.Collection
+	Error      error
 }
 
 type JopitDBConfig struct {
@@ -72,9 +72,10 @@ func InitNoSQL(jopitDBConfig JopitDBConfig) {
 	if err = db.Ping(context.TODO(), nil); err != nil {
 		errDB = fmt.Errorf("Error NoSQL connection: %s", err)
 	}
-	collection = data.DB.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
+	collection := db.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
 	data = &Data{
-		DB:    db,
-		Error: errDB,
+		DB:         db,
+		Error:      errDB,
+		Collection: collection,
 	}
 }

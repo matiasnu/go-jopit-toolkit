@@ -8,20 +8,20 @@ import (
 )
 
 type Repository interface {
-	InsertOne(models interface{}) (*mongo.InsertOneResult, error)
-	GetByFilter(filter bson.M) (*mongo.Cursor, error)
+	InsertOne(storage Data, models interface{}) (*mongo.InsertOneResult, error)
+	GetByFilter(storage Data, filter bson.M) (*mongo.Cursor, error)
 }
 
-func InsertOne(models interface{}) (*mongo.InsertOneResult, error) {
-	result, err := collection.InsertOne(context.TODO(), models)
+func InsertOne(storage Data, models interface{}) (*mongo.InsertOneResult, error) {
+	result, err := storage.Collection.InsertOne(context.TODO(), models)
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
 }
 
-func GetByFilter(filter bson.M) (*mongo.Cursor, error) {
-	cursor, err := collection.Find(context.TODO(), filter)
+func GetByFilter(storage Data, filter bson.M) (*mongo.Cursor, error) {
+	cursor, err := storage.Collection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}
