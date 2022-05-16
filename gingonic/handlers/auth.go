@@ -89,8 +89,9 @@ func (fc *FirebaseCredential) loadCredentials() error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(fc.Type)
 
-	fmt.Printf("%+v", bytes)
+	fmt.Printf("%+v", fc)
 
 	_ = ioutil.WriteFile("credentials.json", bytes, 0644)
 
