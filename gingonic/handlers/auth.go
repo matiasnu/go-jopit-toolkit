@@ -60,7 +60,7 @@ var (
 
 type FirebaseCredential struct {
 	Type                    string `json:"type"`
-	ProjectId               string `json:"project_id"`
+	ProyectId               string `json:"proyect_id"`
 	PrivateKeyId            string `json:"private_key_id"`
 	PrivateKey              string `json:"private_key"`
 	ClientEmail             string `json:"client_email"`
@@ -74,7 +74,7 @@ type FirebaseCredential struct {
 func (fc *FirebaseCredential) loadCredentials() error {
 
 	fc.Type = os.Getenv("TYPE")
-	fc.ProjectId = os.Getenv("PROYECT_ID")
+	fc.ProyectId = os.Getenv("PROYECT_ID")
 	fc.PrivateKeyId = os.Getenv("PRIVATE_KEY_ID")
 	fc.PrivateKey = os.Getenv("PRIVATE_KEY")
 	fc.ClientEmail = os.Getenv("CLIENT_EMAIL")
