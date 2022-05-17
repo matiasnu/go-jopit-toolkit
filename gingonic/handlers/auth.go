@@ -60,15 +60,15 @@ var (
 
 type FirebaseCredential struct {
 	Type                    string `json:"type"`
-	ProjectId               string `json:"projectId"`
-	PrivateKeyId            string `json:"privateKeyId"`
-	PrivateKey              string `json:"privateKey"`
-	ClientEmail             string `json:"clientEmail"`
-	ClientId                string `json:"clientId"`
-	AuthUri                 string `json:"authUri"`
-	TokenUri                string `json:"tokenUri"`
-	AuthProviderX509CertUrl string `json:"authProviderX509CertUrl"`
-	ClientX509CertUrl       string `json:"clientX509CertUrl"`
+	ProjectId               string `json:"project_id"`
+	PrivateKeyId            string `json:"private_key_id"`
+	PrivateKey              string `json:"private_key"`
+	ClientEmail             string `json:"client_email"`
+	ClientId                string `json:"client_id"`
+	AuthUri                 string `json:"auth_uri"`
+	TokenUri                string `json:"token_uri"`
+	AuthProviderX509CertUrl string `json:"auth_provider_x509_cert_url"`
+	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
 func (fc *FirebaseCredential) loadCredentials() error {
