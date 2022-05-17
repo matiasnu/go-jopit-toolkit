@@ -11,7 +11,8 @@ type Repository interface {
 	Delete(storage Data, id string, models interface{}) error
 	GetAll(storage Data, models interface{}) error
 	Create(storage Data, models interface{}) error
-	Update(modelsUpdate interface{}, id int) error
+	Update(storage Data, modelsUpdate interface{}, id int) error
+	RunGenericQuery(storage Data, queryBuilder QueryBuilder) QueryBuilderResult
 }
 
 func GetAll(storage Data, models interface{}) error {
