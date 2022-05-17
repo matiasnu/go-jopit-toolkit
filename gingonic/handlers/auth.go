@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -89,9 +88,6 @@ func (fc *FirebaseCredential) loadCredentials() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(fc.Type)
-
-	fmt.Printf("%+v", fc)
 
 	_ = ioutil.WriteFile("credentials.json", bytes, 0644)
 
