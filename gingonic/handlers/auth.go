@@ -59,7 +59,7 @@ var (
 
 type FirebaseCredential struct {
 	Type                    string `json:"type"`
-	ProyectId               string `json:"proyect_id"`
+	ProjectId               string `json:"project_id"`
 	PrivateKeyId            string `json:"private_key_id"`
 	PrivateKey              string `json:"private_key"`
 	ClientEmail             string `json:"client_email"`
@@ -70,12 +70,12 @@ type FirebaseCredential struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-func LoadFirebaseCredentialFile(Type, ProyectId, PrivateKeyId, PrivateKey, ClientEmail, ClientId, AuthUri, TokenUri, AuthProviderX509CertUrl, ClientX509CertUrl string) error {
+func LoadFirebaseCredentialFile(Type, ProjectId, PrivateKeyId, PrivateKey, ClientEmail, ClientId, AuthUri, TokenUri, AuthProviderX509CertUrl, ClientX509CertUrl string) error {
 
 	fc := FirebaseCredential{}
 
 	fc.Type = Type
-	fc.ProyectId = ProyectId
+	fc.ProjectId = ProjectId
 	fc.PrivateKeyId = PrivateKeyId
 	fc.PrivateKey = PrivateKey
 	fc.ClientEmail = ClientEmail
