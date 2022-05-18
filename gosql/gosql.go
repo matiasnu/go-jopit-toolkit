@@ -58,7 +58,7 @@ func Update(storage Data, modelsUpdate interface{}, id int) error {
 }
 
 func rawQueryBuild(storage Data, query string, models interface{}) (interface{}, error) {
-	err := storage.DB.Raw(query).Scan(&models).Error
+	err := storage.DB.Raw(query).Scan(models).Error
 	if err != nil {
 		return nil, err
 	}
