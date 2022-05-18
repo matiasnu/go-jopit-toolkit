@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -98,6 +99,8 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 
 			request.Header.Set(header, value)
 		}
+
+		httpResp, responseErr = rb.getClient().Do(request)
 
 		if rb.RetryStrategy != nil {
 			retryResp := rb.RetryStrategy.ShouldRetry(request, httpResp, responseErr, retries)
@@ -220,6 +223,31 @@ func isMultipartBuffer(buffer *bytes.Buffer) bool {
 	}
 
 	return true
+}
+
+func (rb *RequestBuilder) getClient() *http.Client {
+	// This will be executed only once
+	// per request builder
+	rb.clientMtxOnce.Do(func() {
+
+		if rb.Client == nil {
+			rb.Client = &http.Client{}
+		}
+
+		if rb.Client.Transport == nil {
+			rb.Client.Timeout = rb.getRequestTimeout()
+		}
+
+		if !rb.FollowRedirect {
+			rb.Client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+				return errors.New("Avoided redirect attempt")
+			}
+		} else {
+			rb.Client.CheckRedirect = defaultCheckRedirectFunc
+		}
+	})
+
+	return rb.Client
 }
 
 func (rb *RequestBuilder) getTransport() http.RoundTripper {
