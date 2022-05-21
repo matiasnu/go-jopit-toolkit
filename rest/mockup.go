@@ -3,6 +3,7 @@ package rest
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -227,6 +228,25 @@ func FlushMockups() {
 	mockDbMutex.Lock()
 	mockMap = make(map[string]*Mock)
 	mockDbMutex.Unlock()
+}
+
+// AddMockups ...
+func AddMockups(mocks ...*Mock) error {
+	for _, m := range mocks {
+		normalizedUrl, err := getNormalizedUrl(m.URL)
+		if err != nil {
+			return errors.New(fmt.Sprintf("Error parsing mock with url=%s. Cause: %s", m.URL, err.Error()))
+		}
+
+		mockDbMutex.Lock()
+		if mockServer == nil {
+			panic(MOCK_SERVER_NOT_INITIALIZED)
+		}
+		m.resetCurrentCallCount()
+		mockMap[hash(m.HTTPMethod+" "+normalizedUrl+" "+getNormalizedBody(m.ReqBody))] = m
+		mockDbMutex.Unlock()
+	}
+	return nil
 }
 
 func ValidateCallCounts() {
