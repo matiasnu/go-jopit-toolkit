@@ -14,6 +14,7 @@ import (
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
+	"github.com/matiasnu/go-jopit-toolkit/goauth"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -54,6 +55,9 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	if !production {
 		router.Use(gin.Logger())
 	}
+	if !conf.DisableFirebaseAuth {
+		router.Use(goauth.AuthWithFirebase())
+	}
 
 	router.NoRoute(noRouteHandler)
 	return router
@@ -76,6 +80,7 @@ type JopitRouterConfig struct {
 	// The default behavior from Go is to cancel the request context if it can
 	// ensure that there's no one on the other side to read the response.
 	DisableCancellationOnClientDisconnect bool
+	DisableFirebaseAuth                   bool
 }
 
 func noRouteHandler(c *gin.Context) {
