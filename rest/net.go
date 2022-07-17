@@ -67,6 +67,13 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 		return
 	}
 
+	// Parse URL and to point to Mockup server if applicable
+	resourceURL, err := parseURL(requestURL)
+	if err != nil {
+		result.Err = err
+		return
+	}
+
 	// Response objects
 	var httpResp *http.Response
 	var responseErr error
@@ -74,7 +81,7 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 	end := false
 	retries := 0
 	for !end {
-		request, err := http.NewRequest(verb, requestURL, bytes.NewBuffer(body))
+		request, err := http.NewRequest(verb, resourceURL, bytes.NewBuffer(body))
 		if err != nil {
 			result.Err = err
 			return
@@ -179,6 +186,24 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 		}
 	}
 	return
+}
+
+// parseURL parses the URL to verify it is a valid one and returns
+// the corresponding resource URL according to the environment
+func parseURL(reqURL string) (string, error) {
+	if mockUpEnv {
+		rURL, err := url.Parse(reqURL)
+		if err != nil {
+			return reqURL, err
+		}
+
+		rURL.Scheme = mockServerURL.Scheme
+		rURL.Host = mockServerURL.Host
+
+		return rURL.String(), nil
+	}
+
+	return reqURL, nil
 }
 
 func (rb *RequestBuilder) marshalReqBody(body interface{}) (b []byte, err error) {
@@ -327,6 +352,11 @@ func (rb *RequestBuilder) setParams(req *http.Request, resourceURL string) {
 
 	// Default headers
 	req.Header.Set("Connection", "keep-alive")
+
+	// If mockup
+	if mockUpEnv {
+		req.Header.Set("X-Original-URL", resourceURL)
+	}
 
 	// Basic Auth
 	if rb.BasicAuth != nil {
