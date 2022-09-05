@@ -92,13 +92,14 @@ func AuthWithFirebase() gin.HandlerFunc {
 
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-		_, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
+		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
 			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
 			c.AbortWithError(401, apiErr)
 			return
 		}
 
+		c.Set("user_id", decodedToken.UID)
 		c.Next()
 	}
 }
