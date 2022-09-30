@@ -63,16 +63,21 @@ func GetConnection(jopitDBConfig JopitDBConfig) (*mongo.Client, error) {
 }
 
 func InitNoSQL(jopitDBConfig JopitDBConfig) {
-	var errDB error
+	var (
+		errDB      error
+		collection *mongo.Collection
+	)
 	db, err := GetConnection(jopitDBConfig)
 	if err != nil {
 		errDB = fmt.Errorf("Error NoSQL connection: %s", err)
+	} else {
+		// Check the connections
+		if err = db.Ping(context.TODO(), nil); err != nil {
+			errDB = fmt.Errorf("Error NoSQL connection: %s", err)
+		}
+		collection = db.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
 	}
-	// Check the connections
-	if err = db.Ping(context.TODO(), nil); err != nil {
-		errDB = fmt.Errorf("Error NoSQL connection: %s", err)
-	}
-	collection := db.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
+
 	data = &Data{
 		DB:         db,
 		Error:      errDB,
