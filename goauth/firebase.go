@@ -2,8 +2,6 @@ package goauth
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"strings"
 	"sync"
@@ -33,31 +31,6 @@ type FirebaseCredential struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-func LoadFirebaseCredentialFile(Type, ProjectId, PrivateKeyId, PrivateKey, ClientEmail, ClientId, AuthUri, TokenUri, AuthProviderX509CertUrl, ClientX509CertUrl string) error {
-
-	fc := FirebaseCredential{}
-
-	fc.Type = Type
-	fc.ProjectId = ProjectId
-	fc.PrivateKeyId = PrivateKeyId
-	fc.PrivateKey = PrivateKey
-	fc.ClientEmail = ClientEmail
-	fc.ClientId = ClientId
-	fc.AuthUri = AuthUri
-	fc.TokenUri = TokenUri
-	fc.AuthProviderX509CertUrl = AuthProviderX509CertUrl
-	fc.ClientX509CertUrl = ClientX509CertUrl
-
-	bytes, err := json.Marshal(fc)
-	if err != nil {
-		return err
-	}
-
-	_ = ioutil.WriteFile("credentials.json", bytes, 0644)
-
-	return nil
-}
-
 type FirebaseClient struct {
 	AuthClient *auth.Client
 }
@@ -71,7 +44,7 @@ func NewfirebaseService() *FirebaseClient {
 
 func InitFirebase() {
 
-	opt := option.WithCredentialsFile("credentials.json")
+	opt := option.WithCredentialsFile("../../environment/credentials.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
