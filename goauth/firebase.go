@@ -2,7 +2,11 @@ package goauth
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
 	"strings"
 	"sync"
 
@@ -44,7 +48,7 @@ func NewfirebaseService() *FirebaseClient {
 
 func InitFirebase() {
 
-	opt := option.WithCredentialsFile("./config/credentials.json")
+	opt := option.WithCredentialsFile("credentials.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
@@ -75,4 +79,42 @@ func AuthWithFirebase() gin.HandlerFunc {
 		c.Set("user_id", decodedToken.UID)
 		c.Next()
 	}
+}
+
+func LoadFirebaseCredentials() error {
+
+	cmd := exec.Command("./firebase-credentials.sh")
+	_, err := cmd.Output()
+
+	if err != nil {
+		log.Println("Error creating executin the firebase script" + err.Error())
+		return err
+	}
+
+	firebaseCredentials := FirebaseCredential{
+		Type:                    os.Getenv("FB_TYPE"),
+		ProjectId:               os.Getenv("FB_PROJECT_ID"),
+		PrivateKeyId:            os.Getenv("FB_PRIVATE_KEY_ID"),
+		PrivateKey:              os.Getenv("FB_PRIVATE_KEY"),
+		ClientEmail:             os.Getenv("FB_CLIENT_EMAIL"),
+		ClientId:                os.Getenv("FB_CLIENT_ID"),
+		AuthUri:                 os.Getenv("FB_AUTH_URI"),
+		TokenUri:                os.Getenv("FB_TOKEN_URI"),
+		AuthProviderX509CertUrl: os.Getenv("FB_AUTH_PROVIDER_X509_CERT_URL"),
+		ClientX509CertUrl:       os.Getenv("FB_CLIENT_X509_CERT_URL"),
+	}
+
+	bytes, err := json.Marshal(firebaseCredentials)
+	if err != nil {
+		log.Println("Error marshaling the firebase struct to json bytes." + err.Error())
+		return err
+	}
+
+	err = ioutil.WriteFile("credentials.json", bytes, 0644)
+	if err != nil {
+		log.Println("Error creating the credentials.json firebase file." + err.Error())
+		return err
+	}
+
+	return nil
 }
