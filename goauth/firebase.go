@@ -44,7 +44,7 @@ func NewfirebaseService() *FirebaseClient {
 
 func InitFirebase() {
 
-	opt := option.WithCredentialsFile("../../credentials.json")
+	opt := option.WithCredentialsFile("credentials.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
