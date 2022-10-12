@@ -2,11 +2,9 @@ package goauth
 
 import (
 	"context"
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 	"sync"
 
@@ -83,14 +81,6 @@ func AuthWithFirebase() gin.HandlerFunc {
 
 func LoadFirebaseCredentials() error {
 
-	cmd := exec.Command("./firebase-credentials.sh")
-	_, err := cmd.Output()
-
-	if err != nil {
-		log.Println("Error creating executin the firebase script" + err.Error())
-		return err
-	}
-
 	firebaseCredentials := FirebaseCredential{
 		Type:                    os.Getenv("FB_TYPE"),
 		ProjectId:               os.Getenv("FB_PROJECT_ID"),
@@ -104,16 +94,8 @@ func LoadFirebaseCredentials() error {
 		ClientX509CertUrl:       os.Getenv("FB_CLIENT_X509_CERT_URL"),
 	}
 
-	bytes, err := json.Marshal(firebaseCredentials)
-	if err != nil {
-		log.Println("Error marshaling the firebase struct to json bytes." + err.Error())
-		return err
-	}
-
-	err = ioutil.WriteFile("credentials.json", bytes, 0644)
-	if err != nil {
-		log.Println("Error creating the credentials.json firebase file." + err.Error())
-		return err
+	if firebaseCredentials.Type == "" || firebaseCredentials.ProjectId == "" || firebaseCredentials.PrivateKeyId == "" || firebaseCredentials.PrivateKey == "" || firebaseCredentials.ClientEmail == "" || firebaseCredentials.ClientId == "" || firebaseCredentials.TokenUri == "" || firebaseCredentials.AuthProviderX509CertUrl == "" || firebaseCredentials.ClientX509CertUrl == "" {
+		return fmt.Errorf("error loading credentials. Some of them are nil")
 	}
 
 	return nil
