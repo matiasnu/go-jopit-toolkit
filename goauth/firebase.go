@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 	"sync"
 
@@ -79,23 +78,45 @@ func AuthWithFirebase() gin.HandlerFunc {
 	}
 }
 
-func LoadFirebaseCredentials() error {
+func CheckFirebaseCredentials() error {
 
-	firebaseCredentials := FirebaseCredential{
-		Type:                    os.Getenv("FB_TYPE"),
-		ProjectId:               os.Getenv("FB_PROJECT_ID"),
-		PrivateKeyId:            os.Getenv("FB_PRIVATE_KEY_ID"),
-		PrivateKey:              os.Getenv("FB_PRIVATE_KEY"),
-		ClientEmail:             os.Getenv("FB_CLIENT_EMAIL"),
-		ClientId:                os.Getenv("FB_CLIENT_ID"),
-		AuthUri:                 os.Getenv("FB_AUTH_URI"),
-		TokenUri:                os.Getenv("FB_TOKEN_URI"),
-		AuthProviderX509CertUrl: os.Getenv("FB_AUTH_PROVIDER_X509_CERT_URL"),
-		ClientX509CertUrl:       os.Getenv("FB_CLIENT_X509_CERT_URL"),
+	firebaseCredentials := FirebaseCredential{}
+
+	var fields []string
+
+	if firebaseCredentials.Type == "" {
+		fields = append(fields, "type is nil")
+	}
+	if firebaseCredentials.ProjectId == "" {
+		fields = append(fields, "projectId is nil")
+	}
+	if firebaseCredentials.PrivateKeyId == "" {
+		fields = append(fields, "privateKeyId is nil")
+	}
+	if firebaseCredentials.PrivateKey == "" {
+		fields = append(fields, "privateKey is nil")
+	}
+	if firebaseCredentials.ClientEmail == "" {
+		fields = append(fields, "clientEmail is nil")
+	}
+	if firebaseCredentials.ClientId == "" {
+		fields = append(fields, "clientId is nil")
+	}
+	if firebaseCredentials.AuthUri == "" {
+		fields = append(fields, "authUri is nil")
+	}
+	if firebaseCredentials.TokenUri == "" {
+		fields = append(fields, "tokenUri is nil")
+	}
+	if firebaseCredentials.AuthProviderX509CertUrl == "" {
+		fields = append(fields, "authProviderX509CertUrl is nil")
+	}
+	if firebaseCredentials.ClientX509CertUrl == "" {
+		fields = append(fields, "clientX509CertUrl is nil")
 	}
 
-	if firebaseCredentials.Type == "" || firebaseCredentials.ProjectId == "" || firebaseCredentials.PrivateKeyId == "" || firebaseCredentials.PrivateKey == "" || firebaseCredentials.ClientEmail == "" || firebaseCredentials.ClientId == "" || firebaseCredentials.TokenUri == "" || firebaseCredentials.AuthProviderX509CertUrl == "" || firebaseCredentials.ClientX509CertUrl == "" {
-		return fmt.Errorf("error loading credentials. Some of them are nil")
+	if len(fields) != 0 {
+		return fmt.Errorf("some credentials values are nil: %s", fields)
 	}
 
 	return nil
