@@ -2,7 +2,9 @@ package goauth
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"strings"
 	"sync"
@@ -80,9 +82,18 @@ func AuthWithFirebase() gin.HandlerFunc {
 
 func CheckFirebaseCredentials() error {
 
+	var fields []string
 	firebaseCredentials := FirebaseCredential{}
 
-	var fields []string
+	bytes, err := ioutil.ReadFile("./config/credentials.json")
+	if err != nil {
+		return fmt.Errorf("file not found")
+	}
+
+	err = json.Unmarshal(bytes, &firebaseCredentials)
+	if err != nil {
+		return fmt.Errorf("error unmarshalling the credentials.json")
+	}
 
 	if firebaseCredentials.Type == "" {
 		fields = append(fields, "type is nil")
