@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 	"sync"
 
@@ -14,6 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"google.golang.org/api/option"
+)
+
+const (
+	FirebaseSecretCredentials = "FIREBASE_CREDENTIALS"
 )
 
 var (
@@ -38,34 +42,35 @@ type FirebaseClient struct {
 	AuthClient *auth.Client
 }
 
-//initiates the firebase client ONCE
-func NewfirebaseService() *FirebaseClient {
+// init initiates the firebase client ONCE
+func init() {
 	once.Do(InitFirebase)
-
-	return firebaseClient
 }
 
 func InitFirebase() {
-
-	opt := option.WithCredentialsFile("./config/credentials.json")
+	bytesCredentials := []byte(os.Getenv(FirebaseSecretCredentials))
+	errCredentials := CheckFirebaseCredentials(bytesCredentials)
+	if errCredentials != nil {
+		log.Println("Error connecting to firebase" + errCredentials.Error())
+	}
+	opt := option.WithCredentialsJSON(bytesCredentials)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
 	}
 
-	auth, err2 := app.Auth(context.Background())
-	if err2 != nil {
-		log.Println("Error connecting to firebase" + err2.Error())
+	authentication, errAuth := app.Auth(context.Background())
+	if errAuth != nil {
+		log.Println("Error connecting to firebase" + errAuth.Error())
 	}
 
 	firebaseClient = &FirebaseClient{
-		AuthClient: auth,
+		AuthClient: authentication,
 	}
 }
 
 func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
@@ -80,19 +85,13 @@ func AuthWithFirebase() gin.HandlerFunc {
 	}
 }
 
-func CheckFirebaseCredentials() error {
-
+func CheckFirebaseCredentials(bytes []byte) error {
 	var fields []string
 	firebaseCredentials := FirebaseCredential{}
 
-	bytes, err := ioutil.ReadFile("./config/credentials.json")
+	err := json.Unmarshal(bytes, &firebaseCredentials)
 	if err != nil {
-		return fmt.Errorf("file not found")
-	}
-
-	err = json.Unmarshal(bytes, &firebaseCredentials)
-	if err != nil {
-		return fmt.Errorf("error unmarshalling the credentials.json")
+		return fmt.Errorf("error unmarshalling the credentials")
 	}
 
 	if firebaseCredentials.Type == "" {
@@ -129,6 +128,5 @@ func CheckFirebaseCredentials() error {
 	if len(fields) != 0 {
 		return fmt.Errorf("some credentials values are nil: %s", fields)
 	}
-
 	return nil
 }
