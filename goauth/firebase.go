@@ -3,6 +3,7 @@ package goauth
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -11,7 +12,6 @@ import (
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"google.golang.org/api/option"
 )
 
@@ -33,31 +33,6 @@ type FirebaseCredential struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-func LoadFirebaseCredentialFile(Type, ProjectId, PrivateKeyId, PrivateKey, ClientEmail, ClientId, AuthUri, TokenUri, AuthProviderX509CertUrl, ClientX509CertUrl string) error {
-
-	fc := FirebaseCredential{}
-
-	fc.Type = Type
-	fc.ProjectId = ProjectId
-	fc.PrivateKeyId = PrivateKeyId
-	fc.PrivateKey = PrivateKey
-	fc.ClientEmail = ClientEmail
-	fc.ClientId = ClientId
-	fc.AuthUri = AuthUri
-	fc.TokenUri = TokenUri
-	fc.AuthProviderX509CertUrl = AuthProviderX509CertUrl
-	fc.ClientX509CertUrl = ClientX509CertUrl
-
-	bytes, err := json.Marshal(fc)
-	if err != nil {
-		return err
-	}
-
-	_ = ioutil.WriteFile("credentials.json", bytes, 0644)
-
-	return nil
-}
-
 type FirebaseClient struct {
 	AuthClient *auth.Client
 }
@@ -71,7 +46,7 @@ func NewfirebaseService() *FirebaseClient {
 
 func InitFirebase() {
 
-	opt := option.WithCredentialsFile("credentials.json")
+	opt := option.WithCredentialsFile("./config/credentials.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
@@ -94,12 +69,64 @@ func AuthWithFirebase() gin.HandlerFunc {
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
-			c.AbortWithError(401, apiErr)
+			c.AbortWithStatusJSON(401, err.Error())
 			return
 		}
 
 		c.Set("user_id", decodedToken.UID)
 		c.Next()
 	}
+}
+
+func CheckFirebaseCredentials() error {
+
+	var fields []string
+	firebaseCredentials := FirebaseCredential{}
+
+	bytes, err := ioutil.ReadFile("./config/credentials.json")
+	if err != nil {
+		return fmt.Errorf("file not found")
+	}
+
+	err = json.Unmarshal(bytes, &firebaseCredentials)
+	if err != nil {
+		return fmt.Errorf("error unmarshalling the credentials.json")
+	}
+
+	if firebaseCredentials.Type == "" {
+		fields = append(fields, "type is nil")
+	}
+	if firebaseCredentials.ProjectId == "" {
+		fields = append(fields, "projectId is nil")
+	}
+	if firebaseCredentials.PrivateKeyId == "" {
+		fields = append(fields, "privateKeyId is nil")
+	}
+	if firebaseCredentials.PrivateKey == "" {
+		fields = append(fields, "privateKey is nil")
+	}
+	if firebaseCredentials.ClientEmail == "" {
+		fields = append(fields, "clientEmail is nil")
+	}
+	if firebaseCredentials.ClientId == "" {
+		fields = append(fields, "clientId is nil")
+	}
+	if firebaseCredentials.AuthUri == "" {
+		fields = append(fields, "authUri is nil")
+	}
+	if firebaseCredentials.TokenUri == "" {
+		fields = append(fields, "tokenUri is nil")
+	}
+	if firebaseCredentials.AuthProviderX509CertUrl == "" {
+		fields = append(fields, "authProviderX509CertUrl is nil")
+	}
+	if firebaseCredentials.ClientX509CertUrl == "" {
+		fields = append(fields, "clientX509CertUrl is nil")
+	}
+
+	if len(fields) != 0 {
+		return fmt.Errorf("some credentials values are nil: %s", fields)
+	}
+
+	return nil
 }
