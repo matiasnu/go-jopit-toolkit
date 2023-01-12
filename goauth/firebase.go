@@ -12,7 +12,6 @@ import (
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"google.golang.org/api/option"
 )
 
@@ -70,8 +69,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
-			c.AbortWithError(401, apiErr)
+			c.JSON(401, err)
 			return
 		}
 
