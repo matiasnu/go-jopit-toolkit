@@ -69,7 +69,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			c.JSON(401, err)
+			c.AbortWithStatusJSON(401, err.Error())
 			return
 		}
 
