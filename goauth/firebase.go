@@ -135,6 +135,10 @@ func MockAuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		userID := c.GetHeader("mockUserId")
+		if userID == "" {
+			c.AbortWithStatusJSON(400, "user_id is missing, you are ussing firebase mock, please provide an user_id")
+			return
+		}
 
 		c.Set("user_id", userID)
 		c.Next()
