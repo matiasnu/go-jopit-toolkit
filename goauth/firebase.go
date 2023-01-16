@@ -130,3 +130,13 @@ func CheckFirebaseCredentials() error {
 
 	return nil
 }
+
+func MockAuthWithFirebase() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID := c.GetHeader("mockUserId")
+
+		c.Set("user_id", userID)
+		c.Next()
+	}
+}
