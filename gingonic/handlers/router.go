@@ -59,6 +59,12 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 		router.Use(goauth.AuthWithFirebase())
 	}
 
+	if !conf.DisableFirebaseAuth {
+		router.Use(goauth.AuthWithFirebase())
+	} else {
+		router.Use(goauth.MockAuthWithFirebase())
+	}
+
 	router.NoRoute(noRouteHandler)
 	return router
 }
