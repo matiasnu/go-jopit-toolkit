@@ -134,9 +134,9 @@ func CheckFirebaseCredentials() error {
 func MockAuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		userID := c.GetHeader("mockUserId")
+		userID := c.GetHeader("HeaderAuthorization")
 		if userID == "" {
-			c.AbortWithStatusJSON(400, "user_id is missing, you are ussing firebase mock, please provide an user_id")
+			c.AbortWithStatusJSON(400, "you are using the mock of firebase, and the user_id is missing. Please provide the user_id.")
 			return
 		}
 
