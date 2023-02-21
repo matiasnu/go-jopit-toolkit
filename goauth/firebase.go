@@ -15,6 +15,10 @@ import (
 	"google.golang.org/api/option"
 )
 
+const (
+	userIDMock = "TEST-MOCK-USER"
+)
+
 var (
 	firebaseClient *FirebaseClient
 	once           sync.Once
@@ -37,7 +41,7 @@ type FirebaseClient struct {
 	AuthClient *auth.Client
 }
 
-//initiates the firebase client ONCE
+// initiates the firebase client ONCE
 func NewfirebaseService() *FirebaseClient {
 	once.Do(InitFirebase)
 
@@ -136,8 +140,7 @@ func MockAuthWithFirebase() gin.HandlerFunc {
 
 		userID := c.GetHeader("HeaderAuthorization")
 		if userID == "" {
-			c.AbortWithStatusJSON(400, "you are using the mock of firebase, and the user_id is missing. Please provide the user_id.")
-			return
+			userID = userIDMock
 		}
 
 		c.Set("user_id", userID)
