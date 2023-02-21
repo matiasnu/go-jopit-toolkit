@@ -4,10 +4,15 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/matiasnu/go-jopit-toolkit/goutils/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	mongoURI = "mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority"
 )
 
 var (
@@ -25,7 +30,6 @@ type JopitDBConfig struct {
 	Username   string
 	Password   string
 	Host       string
-	Port       int
 	Database   string
 	Collection string
 }
@@ -52,14 +56,17 @@ func NewNoSQL(jopitDBConfig JopitDBConfig) *Data {
 
 func GetConnection(jopitDBConfig JopitDBConfig) (*mongo.Client, error) {
 	host := jopitDBConfig.Host
-	port := jopitDBConfig.Port
+	username := jopitDBConfig.Username
+	password := jopitDBConfig.Password
 
-	credential := options.Credential{
-		Username: jopitDBConfig.Username,
-		Password: jopitDBConfig.Password,
-	}
-	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", host, port)).SetAuth(credential)
-	return mongo.Connect(context.TODO(), clientOpts)
+	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
+	clientOpts := options.Client().
+		ApplyURI(fmt.Sprintf(mongoURI, username, password, host)).
+		SetServerAPIOptions(serverAPIOptions)
+	// TODO pass context? (Analyze)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	return mongo.Connect(ctx, clientOpts)
 }
 
 func InitNoSQL(jopitDBConfig JopitDBConfig) {
