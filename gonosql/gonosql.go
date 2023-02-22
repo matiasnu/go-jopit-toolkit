@@ -2,6 +2,7 @@ package gonosql
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2/bson"
@@ -32,7 +33,12 @@ func GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Curso
 
 func Get(ctx context.Context, storage Data, id string) *mongo.SingleResult {
 	// TODO add findOneOptions in method
-	return storage.Collection.FindOne(ctx, bson.M{"_id": id})
+	primitiveID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		// TODO return err? log?
+		return nil
+	}
+	return storage.Collection.FindOne(ctx, bson.M{"_id": primitiveID})
 }
 
 func Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error) {
