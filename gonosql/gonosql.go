@@ -42,9 +42,10 @@ func Get(ctx context.Context, storage Data, id string) *mongo.SingleResult {
 }
 
 func Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error) {
-	result, err := storage.Collection.DeleteOne(ctx, bson.M{"_id": id})
+	primitiveID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
+		// TODO return err? log?
 		return nil, err
 	}
-	return result, nil
+	return storage.Collection.DeleteOne(ctx, bson.M{"_id": primitiveID})
 }
