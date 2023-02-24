@@ -13,6 +13,7 @@ type Repository interface {
 	GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Cursor, error)
 	Get(ctx context.Context, storage Data, id string) *mongo.SingleResult
 	Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error)
+	Update(ctx context.Context, storage Data, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
 }
 
 func InsertOne(ctx context.Context, storage Data, models interface{}) (*mongo.InsertOneResult, error) {
@@ -42,9 +43,17 @@ func Get(ctx context.Context, storage Data, id string) *mongo.SingleResult {
 }
 
 func Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error) {
-	result, err := storage.Collection.DeleteOne(ctx, bson.M{"_id": id})
+	primitiveID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+	return storage.Collection.DeleteOne(ctx, bson.M{"_id": primitiveID})
+}
+
+func Update(ctx context.Context, storage Data, id string, updateDocument interface{}) (*mongo.UpdateResult, error) {
+	primitiveID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	return storage.Collection.UpdateOne(ctx, bson.M{"_id": primitiveID}, bson.M{"$set": updateDocument})
 }
