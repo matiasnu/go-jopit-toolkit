@@ -10,7 +10,7 @@ import (
 
 type Repository interface {
 	InsertOne(ctx context.Context, storage Data, models interface{}) (*mongo.InsertOneResult, error)
-	GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Cursor, error)
+	GetByFilter(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error)
 	Get(ctx context.Context, storage Data, id string) *mongo.SingleResult
 	Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error)
 	Update(ctx context.Context, storage Data, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
@@ -24,7 +24,8 @@ func InsertOne(ctx context.Context, storage Data, models interface{}) (*mongo.In
 	return result, nil
 }
 
-func GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Cursor, error) {
+func GetByFilter(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error) {
+	filter := bson.M{key: value}
 	cursor, err := storage.Collection.Find(ctx, filter)
 	if err != nil {
 		return nil, err
