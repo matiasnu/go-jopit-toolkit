@@ -10,27 +10,24 @@ import (
 
 type Repository interface {
 	InsertOne(ctx context.Context, storage Data, models interface{}) (*mongo.InsertOneResult, error)
-	GetByFilter(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error)
+	GetByKey(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error)
+	GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Cursor, error)
 	Get(ctx context.Context, storage Data, id string) *mongo.SingleResult
 	Delete(ctx context.Context, storage Data, id string) (*mongo.DeleteResult, error)
 	Update(ctx context.Context, storage Data, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
 }
 
 func InsertOne(ctx context.Context, storage Data, models interface{}) (*mongo.InsertOneResult, error) {
-	result, err := storage.Collection.InsertOne(ctx, models)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
+	return storage.Collection.InsertOne(ctx, models)
 }
 
-func GetByFilter(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error) {
+func GetByKey(ctx context.Context, storage Data, key, value string) (*mongo.Cursor, error) {
 	filter := bson.M{key: value}
-	cursor, err := storage.Collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	return cursor, nil
+	return storage.Collection.Find(ctx, filter)
+}
+
+func GetByFilter(ctx context.Context, storage Data, filter bson.M) (*mongo.Cursor, error) {
+	return storage.Collection.Find(ctx, filter)
 }
 
 func Get(ctx context.Context, storage Data, id string) *mongo.SingleResult {
