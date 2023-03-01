@@ -45,6 +45,10 @@ func (d *Data) Close(ctx context.Context) {
 	logger.Debugf("Connection close sucessfully")
 }
 
+func (d *Data) NewCollection(collection string) *mongo.Collection {
+	return d.Database.Collection(collection)
+}
+
 func NewNoSQL(jopitDBConfig Config) *Data {
 	once.Do(func() {
 		InitNoSQL(jopitDBConfig)
