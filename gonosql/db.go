@@ -21,17 +21,16 @@ var (
 )
 
 type Data struct {
-	DB         *mongo.Client
-	Collection *mongo.Collection
-	Error      error
+	DB       *mongo.Client
+	Database *mongo.Database
+	Error    error
 }
 
-type JopitDBConfig struct {
-	Username   string
-	Password   string
-	Host       string
-	Database   string
-	Collection string
+type Config struct {
+	Username string
+	Password string
+	Host     string
+	Database string
 }
 
 // Close closes the resources used by data.
@@ -46,7 +45,11 @@ func (d *Data) Close(ctx context.Context) {
 	logger.Debugf("Connection close sucessfully")
 }
 
-func NewNoSQL(jopitDBConfig JopitDBConfig) *Data {
+func (d *Data) NewCollection(collection string) *mongo.Collection {
+	return d.Database.Collection(collection)
+}
+
+func NewNoSQL(jopitDBConfig Config) *Data {
 	once.Do(func() {
 		InitNoSQL(jopitDBConfig)
 	})
@@ -54,7 +57,7 @@ func NewNoSQL(jopitDBConfig JopitDBConfig) *Data {
 	return data
 }
 
-func GetConnection(jopitDBConfig JopitDBConfig) (*mongo.Client, error) {
+func GetConnection(jopitDBConfig Config) (*mongo.Client, error) {
 	host := jopitDBConfig.Host
 	username := jopitDBConfig.Username
 	password := jopitDBConfig.Password
@@ -69,10 +72,10 @@ func GetConnection(jopitDBConfig JopitDBConfig) (*mongo.Client, error) {
 	return mongo.Connect(ctx, clientOpts)
 }
 
-func InitNoSQL(jopitDBConfig JopitDBConfig) {
+func InitNoSQL(jopitDBConfig Config) {
 	var (
-		errDB      error
-		collection *mongo.Collection
+		errDB    error
+		database *mongo.Database
 	)
 	db, err := GetConnection(jopitDBConfig)
 	if err != nil {
@@ -82,12 +85,12 @@ func InitNoSQL(jopitDBConfig JopitDBConfig) {
 		if err = db.Ping(context.TODO(), nil); err != nil {
 			errDB = fmt.Errorf("Error NoSQL connection: %s", err)
 		}
-		collection = db.Database(jopitDBConfig.Database).Collection(jopitDBConfig.Collection)
+		database = db.Database(jopitDBConfig.Database)
 	}
 
 	data = &Data{
-		DB:         db,
-		Error:      errDB,
-		Collection: collection,
+		DB:       db,
+		Error:    errDB,
+		Database: database,
 	}
 }
