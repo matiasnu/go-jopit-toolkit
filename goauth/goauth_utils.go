@@ -47,6 +47,10 @@ func GetClientId(request *http.Request) string {
 	}
 }
 
+func GetUserId(request *http.Request) string {
+	return request.Header.Get("HeaderAuthorization")
+}
+
 func GetOperatorID(request *http.Request) (operatorID int, exists bool) {
 	val := request.Header.Get("X-Operator-Id")
 	if val == "" {
