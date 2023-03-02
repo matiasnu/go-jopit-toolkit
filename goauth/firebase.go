@@ -135,6 +135,14 @@ func CheckFirebaseCredentials() error {
 	return nil
 }
 
+func GetUserId(c *gin.Context) string {
+	userID, exist := c.Get("user_id")
+	if !exist {
+		return ""
+	}
+	return userID.(string)
+}
+
 func MockAuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
