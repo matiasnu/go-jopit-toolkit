@@ -15,7 +15,8 @@ type Repository interface {
 	Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.SingleResult
 	Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error)
 	Update(ctx context.Context, storage *mongo.Collection, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
-  Search(ctx context.Context, storage *mongo.Collection, keyword string) (*mongo.Cursor, error)
+	UpdateByFilter(ctx context.Context, storage *mongo.Collection, id string, filter bson.M) (*mongo.UpdateResult, error)
+	Search(ctx context.Context, storage *mongo.Collection, keyword string) (*mongo.Cursor, error)
 }
 
 func InsertOne(ctx context.Context, storage *mongo.Collection, models interface{}) (*mongo.InsertOneResult, error) {
@@ -55,6 +56,14 @@ func Update(ctx context.Context, storage *mongo.Collection, id string, updateDoc
 		return nil, err
 	}
 	return storage.UpdateOne(ctx, bson.M{"_id": primitiveID}, bson.M{"$set": updateDocument})
+}
+
+func UpdateByFilter(ctx context.Context, storage *mongo.Collection, id string, filter bson.M) (*mongo.UpdateResult, error) {
+	primitiveID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	return storage.UpdateOne(ctx, bson.M{"_id": primitiveID}, filter)
 }
 
 func Search(ctx context.Context, storage *mongo.Collection, keyword string) (*mongo.Cursor, error) {
