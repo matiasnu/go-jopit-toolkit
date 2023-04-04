@@ -13,6 +13,7 @@ type Repository interface {
 	GetByKey(ctx context.Context, storage *mongo.Collection, key, value string) (*mongo.Cursor, error)
 	GetByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) (*mongo.Cursor, error)
 	Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.SingleResult
+	GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error)
 	Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error)
 	Update(ctx context.Context, storage *mongo.Collection, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
 	UpdateByFilter(ctx context.Context, storage *mongo.Collection, id string, filter bson.M) (*mongo.UpdateResult, error)
@@ -40,6 +41,10 @@ func Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.Singl
 		return nil
 	}
 	return storage.FindOne(ctx, bson.M{"_id": primitiveID})
+}
+
+func GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error) {
+	return storage.Find(ctx, nil)
 }
 
 func Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error) {
