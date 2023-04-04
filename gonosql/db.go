@@ -34,12 +34,12 @@ type Config struct {
 }
 
 // Close closes the resources used by data.
-func (d *Data) Close(ctx context.Context) {
+func (d *Data) Close() {
 	if data == nil {
 		return
 	}
 
-	if err := data.DB.Disconnect(ctx); err != nil {
+	if err := data.DB.Disconnect(context.Background()); err != nil {
 		logger.Errorf("Error disconect DB", err)
 	}
 	logger.Debugf("Connection close sucessfully")
