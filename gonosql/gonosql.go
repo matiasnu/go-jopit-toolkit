@@ -44,7 +44,7 @@ func Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.Singl
 }
 
 func GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error) {
-	return storage.Find(ctx, nil)
+	return storage.Find(ctx, bson.D{})
 }
 
 func Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error) {
