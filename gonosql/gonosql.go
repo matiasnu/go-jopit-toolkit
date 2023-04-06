@@ -18,6 +18,8 @@ type Repository interface {
 	Update(ctx context.Context, storage *mongo.Collection, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
 	UpdateByFilter(ctx context.Context, storage *mongo.Collection, id string, filter bson.M) (*mongo.UpdateResult, error)
 	Search(ctx context.Context, storage *mongo.Collection, keyword string) (*mongo.Cursor, error)
+	CountDocuments(ctx context.Context, storage *mongo.Collection, id string) (int64, error)
+	CountDocumentsByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) (int64, error)
 }
 
 func InsertOne(ctx context.Context, storage *mongo.Collection, models interface{}) (*mongo.InsertOneResult, error) {
@@ -79,4 +81,16 @@ func Search(ctx context.Context, storage *mongo.Collection, keyword string) (*mo
 		},
 	}
 	return GetByFilter(ctx, storage, filter)
+}
+
+func CountDocuments(ctx context.Context, storage *mongo.Collection, id string) (int64, error) {
+	primitiveID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return 0, err
+	}
+	return CountDocumentsByFilter(ctx, storage, bson.M{"_id": primitiveID})
+}
+
+func CountDocumentsByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) (int64, error) {
+	return storage.CountDocuments(ctx, filter)
 }
