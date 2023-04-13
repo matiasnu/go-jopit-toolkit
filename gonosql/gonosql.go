@@ -3,7 +3,6 @@ package gonosql
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-
 	"go.mongodb.org/mongo-driver/mongo"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -14,6 +13,7 @@ type Repository interface {
 	GetByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) (*mongo.Cursor, error)
 	Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.SingleResult
 	GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error)
+	GetByIDs(ctx context.Context, storage *mongo.Collection, ids []string) (*mongo.Cursor, error)
 	Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error)
 	Update(ctx context.Context, storage *mongo.Collection, id string, updateDocument interface{}) (*mongo.UpdateResult, error)
 	UpdateByFilter(ctx context.Context, storage *mongo.Collection, id string, filter bson.M) (*mongo.UpdateResult, error)
@@ -47,6 +47,18 @@ func Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.Singl
 
 func GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error) {
 	return storage.Find(ctx, bson.M{})
+}
+
+func GetByIDs(ctx context.Context, storage *mongo.Collection, ids []string) (*mongo.Cursor, error) {
+	var objectIDs []primitive.ObjectID
+	for _, id := range ids {
+		objectID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, err
+		}
+		objectIDs = append(objectIDs, objectID)
+	}
+	return storage.Find(ctx, bson.M{"_id": bson.M{"$in": objectIDs}})
 }
 
 func Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error) {
