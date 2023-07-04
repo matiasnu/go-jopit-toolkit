@@ -20,8 +20,8 @@ const (
 )
 
 var (
-	firebaseClient *FirebaseClient
-	once           sync.Once
+	FbClient *FirebaseClient
+	once     sync.Once
 )
 
 type FirebaseCredential struct {
@@ -45,7 +45,7 @@ type FirebaseClient struct {
 func NewfirebaseService() *FirebaseClient {
 	once.Do(InitFirebase)
 
-	return firebaseClient
+	return FbClient
 }
 
 func InitFirebase() {
@@ -61,7 +61,7 @@ func InitFirebase() {
 		log.Println("Error connecting to firebase" + err2.Error())
 	}
 
-	firebaseClient = &FirebaseClient{
+	FbClient = &FirebaseClient{
 		AuthClient: auth,
 	}
 }
@@ -71,7 +71,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
+		decodedToken, err := FbClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
 			c.AbortWithStatusJSON(401, err.Error())
 			return
@@ -146,4 +146,9 @@ func MockAuthWithFirebase() gin.HandlerFunc {
 		c.Set("user_id", userID)
 		c.Next()
 	}
+}
+
+func MessageSignIn() error {
+
+	return nil
 }

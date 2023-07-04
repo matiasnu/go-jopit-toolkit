@@ -83,6 +83,7 @@ type JopitRouterConfig struct {
 	// ensure that there's no one on the other side to read the response.
 	DisableCancellationOnClientDisconnect bool
 	DisableFirebaseAuth                   bool
+	DisabaleAuth0                         bool
 }
 
 func noRouteHandler(c *gin.Context) {
