@@ -109,3 +109,7 @@ func NewCustomStatusApiErrorFromBytes(data []byte, status int) (ApiError, error)
 	}
 	return apierr, err
 }
+
+func NewGenericErrorMessageDecoder(err error) ApiError {
+	return NewBadRequestApiError(fmt.Sprintf("Error decoder in handler, invalid JSON body: %s", err.Error()))
+}

@@ -12,12 +12,12 @@ import (
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
-	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"google.golang.org/api/option"
 )
 
 const (
 	FirebaseSecretCredentials = "FIREBASE_CREDENTIALS"
+	UserIDMock = "TEST-MOCK-USER"
 )
 
 var (
@@ -75,8 +75,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			apiErr := apierrors.NewInternalServerApiError("error getting token", err)
-			c.AbortWithError(401, apiErr)
+			c.AbortWithStatusJSON(401, err.Error())
 			return
 		}
 
@@ -129,4 +128,17 @@ func CheckFirebaseCredentials(bytes []byte) error {
 		return fmt.Errorf("some credentials values are nil: %s", fields)
 	}
 	return nil
+}
+
+func MockAuthWithFirebase() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID := c.GetHeader("HeaderAuthorization")
+		if userID == "" {
+			userID = UserIDMock
+		}
+
+		c.Set("user_id", userID)
+		c.Next()
+	}
 }
