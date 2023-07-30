@@ -1,8 +1,13 @@
 package handlers
 
-import "github.com/gin-gonic/gin"
+import (
+	"time"
 
-func CORSMiddleware() gin.HandlerFunc {
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
+
+/* func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "https://jopit.com.ar")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, token")
@@ -17,5 +22,19 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 
 		c.Next()
+	}
+}
+*/
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		cors.New(cors.Config{
+			AllowOrigins:     []string{"https://jopit.com.ar"},
+			AllowMethods:     []string{"PUT", "PATCH", "GET"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Origin", "Accept"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		})
 	}
 }

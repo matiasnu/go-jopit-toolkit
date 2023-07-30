@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/gin-gonic/gin v1.7.7
+	github.com/gin-gonic/gin v1.8.1
 	github.com/json-iterator/go v1.1.12
 	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 )
@@ -22,6 +22,7 @@ require (
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.22.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/gin-contrib/cors v1.4.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
@@ -31,6 +32,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -47,6 +49,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.19.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/swaggo/swag v1.8.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
@@ -79,7 +82,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.7.1 // indirect
+	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2
 	github.com/swaggo/gin-swagger v1.4.3
 	go.mongodb.org/mongo-driver v1.9.1

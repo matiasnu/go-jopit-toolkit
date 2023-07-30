@@ -52,7 +52,7 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	if !conf.DisableSwagger {
 		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
-	if !conf.DisableCors {
+	if !conf.DisableCORS {
 		router.Use(CORSMiddleware())
 	}
 	if !production {
@@ -86,7 +86,7 @@ type JopitRouterConfig struct {
 	// ensure that there's no one on the other side to read the response.
 	DisableCancellationOnClientDisconnect bool
 	DisableFirebaseAuth                   bool
-	DisableCors                           bool
+	DisableCORS                           bool
 }
 
 func noRouteHandler(c *gin.Context) {
