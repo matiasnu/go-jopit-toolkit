@@ -72,6 +72,9 @@ func InitFirebase() {
 func GetEmailFromUserID(c *gin.Context) (string, error) {
 
 	userID, exist := c.Get("user_id")
+	if !exist {
+		return "", fmt.Errorf("expected to receive an user_id, but it was empty")
+	}
 
 	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
 	if err != nil {
@@ -80,9 +83,6 @@ func GetEmailFromUserID(c *gin.Context) (string, error) {
 
 	userEmail := userRecord.UserInfo.Email
 
-	if !exist {
-		return "", nil
-	}
 	return userEmail, nil
 }
 
