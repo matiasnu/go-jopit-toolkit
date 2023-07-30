@@ -135,12 +135,20 @@ func CheckFirebaseCredentials() error {
 	return nil
 }
 
-func GetUserId(c *gin.Context) string {
+func GetUserId(c *gin.Context) (string, error) {
 	userID, exist := c.Get("user_id")
-	if !exist {
-		return ""
+
+	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
+	if err != nil {
+		return "", err
 	}
-	return userID.(string)
+
+	userEmail := userRecord.Email
+
+	if !exist {
+		return "", nil
+	}
+	return userEmail, nil
 }
 
 func MockAuthWithFirebase() gin.HandlerFunc {
