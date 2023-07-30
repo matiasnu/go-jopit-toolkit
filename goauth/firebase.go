@@ -69,6 +69,22 @@ func InitFirebase() {
 	}
 }
 
+func GetUserId(c *gin.Context) (string, error) {
+	userID, exist := c.Get("user_id")
+
+	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
+	if err != nil {
+		return "", err
+	}
+
+	userEmail := userRecord.UserInfo.Email
+
+	if !exist {
+		return "", nil
+	}
+	return userEmail, nil
+}
+
 func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("HeaderAuthorization")
