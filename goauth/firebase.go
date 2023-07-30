@@ -69,7 +69,8 @@ func InitFirebase() {
 	}
 }
 
-func GetUserId(c *gin.Context) (string, error) {
+func GetEmailFromUserID(c *gin.Context) (string, error) {
+
 	userID, exist := c.Get("user_id")
 
 	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
