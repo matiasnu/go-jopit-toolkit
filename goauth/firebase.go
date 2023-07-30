@@ -143,7 +143,7 @@ func GetUserId(c *gin.Context) (string, error) {
 		return "", err
 	}
 
-	userEmail := userRecord.Email
+	userEmail := userRecord.UserInfo.Email
 
 	if !exist {
 		return "", nil
