@@ -20,7 +20,7 @@ const (
 )
 
 var (
-	firebaseClient *FirebaseClient
+	FirebaseClient *FbClient
 	once           sync.Once
 )
 
@@ -37,15 +37,15 @@ type FirebaseCredential struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-type FirebaseClient struct {
+type FbClient struct {
 	AuthClient *auth.Client
 }
 
 // initiates the firebase client ONCE
-func NewfirebaseService() *FirebaseClient {
+func NewfirebaseService() *FbClient {
 	once.Do(InitFirebase)
 
-	return firebaseClient
+	return FirebaseClient
 }
 
 func InitFirebase() {
@@ -61,7 +61,7 @@ func InitFirebase() {
 		log.Println("Error connecting to firebase" + err2.Error())
 	}
 
-	firebaseClient = &FirebaseClient{
+	FirebaseClient = &FbClient{
 		AuthClient: auth,
 	}
 }
@@ -71,7 +71,7 @@ func AuthWithFirebase() gin.HandlerFunc {
 
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
+		decodedToken, err := FirebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
 			c.AbortWithStatusJSON(401, err.Error())
 			return
@@ -138,7 +138,7 @@ func CheckFirebaseCredentials() error {
 func GetUserId(c *gin.Context) (string, error) {
 	userID, exist := c.Get("user_id")
 
-	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
+	userRecord, err := FirebaseClient.AuthClient.GetUser(c, userID.(string))
 	if err != nil {
 		return "", err
 	}
