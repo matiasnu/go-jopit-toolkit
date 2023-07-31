@@ -30,6 +30,14 @@ type FirebaseAccountManager interface {
 	ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError)
 }
 
+type firebaseAccountManager struct {
+	AuthClient *auth.Client
+}
+
+func NewFirebaseAccountManager() FirebaseAccountManager {
+	return firebaseAccountManager{AuthClient: fbClient.AuthClient}
+}
+
 type firebaseClient struct {
 	AuthClient *auth.Client
 }
@@ -162,9 +170,9 @@ func GetUserId(c *gin.Context) string {
 	return userID.(string)
 }
 
-func VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
+func (fam firebaseAccountManager) VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
 
-	link, err := fbClient.AuthClient.EmailVerificationLink(c, userEmail)
+	link, err := fam.AuthClient.EmailVerificationLink(c, userEmail)
 	if err != nil {
 		return "", apierrors.NewApiError("error on firebase verification . ", err.Error(), 500, apierrors.CauseList{})
 	}
@@ -172,9 +180,9 @@ func VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiE
 	return link, nil
 }
 
-func ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
+func (fam firebaseAccountManager) ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
 
-	link, err := fbClient.AuthClient.PasswordResetLink(c, userEmail)
+	link, err := fam.AuthClient.PasswordResetLink(c, userEmail)
 	if err != nil {
 		return "", apierrors.NewApiError("error on firebase PasswordResetLink. ", err.Error(), 500, apierrors.CauseList{})
 	}
