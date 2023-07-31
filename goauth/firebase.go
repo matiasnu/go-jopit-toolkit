@@ -162,9 +162,9 @@ func GetUserId(c *gin.Context) string {
 	return userID.(string)
 }
 
-func (fc *firebaseClient) VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
+func VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
 
-	link, err := fc.AuthClient.EmailVerificationLink(c, userEmail)
+	link, err := fbClient.AuthClient.EmailVerificationLink(c, userEmail)
 	if err != nil {
 		return "", apierrors.NewApiError("error on firebase verification . ", err.Error(), 500, apierrors.CauseList{})
 	}
@@ -172,9 +172,9 @@ func (fc *firebaseClient) VerificationEmail(c *gin.Context, userEmail string) (s
 	return link, nil
 }
 
-func (fc *firebaseClient) ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
+func ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
 
-	link, err := fc.AuthClient.PasswordResetLink(c, userEmail)
+	link, err := fbClient.AuthClient.PasswordResetLink(c, userEmail)
 	if err != nil {
 		return "", apierrors.NewApiError("error on firebase PasswordResetLink. ", err.Error(), 500, apierrors.CauseList{})
 	}
