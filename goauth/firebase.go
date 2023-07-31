@@ -4,28 +4,37 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"sync"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"google.golang.org/api/option"
 )
 
 const (
-	FirebaseSecretCredentials = "FIREBASE_CREDENTIALS"
-	UserIDMock                = "TEST-MOCK-USER"
+	userIDMock = "TEST-MOCK-USER"
 )
 
 var (
-	firebaseClient *FirebaseClient
-	once           sync.Once
+	fbClient *firebaseClient
+	once     sync.Once
 )
 
-type FirebaseCredential struct {
+type FirebaseAccountManager interface {
+	VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError)
+	ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError)
+}
+
+type firebaseClient struct {
+	AuthClient *auth.Client
+}
+
+type firebaseCredential struct {
 	Type                    string `json:"type"`
 	ProjectId               string `json:"project_id"`
 	PrivateKeyId            string `json:"private_key_id"`
@@ -38,59 +47,37 @@ type FirebaseCredential struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-type FirebaseClient struct {
-	AuthClient *auth.Client
-}
-
-// init initiates the firebase client ONCE
-func init() {
+// initiates the firebase client ONCE
+func NewfirebaseService() *firebaseClient {
 	once.Do(InitFirebase)
+
+	return fbClient
 }
 
 func InitFirebase() {
-	bytesCredentials := []byte(os.Getenv(FirebaseSecretCredentials))
-	errCredentials := CheckFirebaseCredentials(bytesCredentials)
-	if errCredentials != nil {
-		log.Println("Error connecting to firebase" + errCredentials.Error())
-	}
-	opt := option.WithCredentialsJSON(bytesCredentials)
+
+	opt := option.WithCredentialsFile("./config/credentials.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Println("Error connecting to firebase" + err.Error())
 	}
 
-	authentication, errAuth := app.Auth(context.Background())
-	if errAuth != nil {
-		log.Println("Error connecting to firebase" + errAuth.Error())
+	auth, err2 := app.Auth(context.Background())
+	if err2 != nil {
+		log.Println("Error connecting to firebase" + err2.Error())
 	}
 
-	firebaseClient = &FirebaseClient{
-		AuthClient: authentication,
+	fbClient = &firebaseClient{
+		AuthClient: auth,
 	}
-}
-
-func GetEmailFromUserID(c *gin.Context) (string, error) {
-
-	userID, exist := c.Get("user_id")
-	if !exist {
-		return "", fmt.Errorf("expected to receive an user_id, but it was empty")
-	}
-
-	userRecord, err := firebaseClient.AuthClient.GetUser(c, userID.(string))
-	if err != nil {
-		return "", err
-	}
-
-	userEmail := userRecord.UserInfo.Email
-
-	return userEmail, nil
 }
 
 func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		header := c.GetHeader("HeaderAuthorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-		decodedToken, err := firebaseClient.AuthClient.VerifyIDToken(context.Background(), idToken)
+		decodedToken, err := fbClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
 			c.AbortWithStatusJSON(401, err.Error())
 			return
@@ -101,13 +88,19 @@ func AuthWithFirebase() gin.HandlerFunc {
 	}
 }
 
-func CheckFirebaseCredentials(bytes []byte) error {
-	var fields []string
-	firebaseCredentials := FirebaseCredential{}
+func CheckFirebaseCredentials() error {
 
-	err := json.Unmarshal(bytes, &firebaseCredentials)
+	var fields []string
+	firebaseCredentials := firebaseCredential{}
+
+	bytes, err := ioutil.ReadFile("./config/credentials.json")
 	if err != nil {
-		return fmt.Errorf("error unmarshalling the credentials")
+		return fmt.Errorf("file not found")
+	}
+
+	err = json.Unmarshal(bytes, &firebaseCredentials)
+	if err != nil {
+		return fmt.Errorf("error unmarshalling the credentials.json")
 	}
 
 	if firebaseCredentials.Type == "" {
@@ -144,7 +137,21 @@ func CheckFirebaseCredentials(bytes []byte) error {
 	if len(fields) != 0 {
 		return fmt.Errorf("some credentials values are nil: %s", fields)
 	}
+
 	return nil
+}
+
+func MockAuthWithFirebase() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		userID := c.GetHeader("HeaderAuthorization")
+		if userID == "" {
+			userID = userIDMock
+		}
+
+		c.Set("user_id", userID)
+		c.Next()
+	}
 }
 
 func GetUserId(c *gin.Context) string {
@@ -155,15 +162,22 @@ func GetUserId(c *gin.Context) string {
 	return userID.(string)
 }
 
-func MockAuthWithFirebase() gin.HandlerFunc {
-	return func(c *gin.Context) {
+func (fc *firebaseClient) VerificationEmail(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
 
-		userID := c.GetHeader("HeaderAuthorization")
-		if userID == "" {
-			userID = UserIDMock
-		}
-
-		c.Set("user_id", userID)
-		c.Next()
+	link, err := fc.AuthClient.EmailVerificationLink(c, userEmail)
+	if err != nil {
+		return "", apierrors.NewApiError("error on firebase verification . ", err.Error(), 500, apierrors.CauseList{})
 	}
+
+	return link, nil
+}
+
+func (fc *firebaseClient) ResetPassword(c *gin.Context, userEmail string) (string, apierrors.ApiError) {
+
+	link, err := fc.AuthClient.PasswordResetLink(c, userEmail)
+	if err != nil {
+		return "", apierrors.NewApiError("error on firebase PasswordResetLink. ", err.Error(), 500, apierrors.CauseList{})
+	}
+
+	return link, nil
 }
