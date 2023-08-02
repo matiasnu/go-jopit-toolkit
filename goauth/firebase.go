@@ -17,8 +17,7 @@ import (
 )
 
 const (
-	FirebaseSecretCredentials = "FIREBASE_CREDENTIALS"
-	UserIDMock                = "TEST-MOCK-USER"
+	UserIDMock = "TEST-MOCK-USER"
 )
 
 var (

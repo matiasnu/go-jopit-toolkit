@@ -11,6 +11,7 @@ require (
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/gin-contrib/cors v1.4.0
 	google.golang.org/api v0.79.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
@@ -22,7 +23,6 @@ require (
 	cloud.google.com/go/iam v0.3.0 // indirect
 	cloud.google.com/go/storage v1.22.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/gin-contrib/cors v1.4.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
@@ -82,7 +82,6 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2
 	github.com/swaggo/gin-swagger v1.4.3
 	go.mongodb.org/mongo-driver v1.9.1
