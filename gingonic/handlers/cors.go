@@ -7,7 +7,8 @@ import (
 
 var (
 	corsConfig = cors.Config{
-		AllowOrigins:     []string{"https://jopit.com.ar"},
+		AllowAllOrigins:  true,
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "token"},
 		ExposeHeaders:    []string{"Content-Length"},
