@@ -76,7 +76,7 @@ require (
 require (
 	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/pprof v1.3.0
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/jinzhu/gorm v1.9.16
