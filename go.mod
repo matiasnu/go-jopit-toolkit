@@ -11,7 +11,6 @@ require (
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/gin-contrib/cors v1.4.0
 	google.golang.org/api v0.79.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
@@ -51,6 +50,7 @@ require (
 	github.com/onsi/gomega v1.19.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/stretchr/testify v1.8.0 // indirect
 	github.com/swaggo/swag v1.8.1 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
@@ -76,7 +76,7 @@ require (
 require (
 	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/pprof v1.3.0
-	github.com/go-sql-driver/mysql v1.6.0
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/jinzhu/gorm v1.9.16
