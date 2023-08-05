@@ -94,7 +94,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	github.com/sirupsen/logrus v1.8.1
+	github.com/sirupsen/logrus v1.9.3
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	go.mongodb.org/mongo-driver v1.9.1
