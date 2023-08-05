@@ -90,7 +90,7 @@ require (
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/pprof v1.3.0
 	github.com/go-sql-driver/mysql v1.7.1
-	github.com/gofrs/uuid v4.2.0+incompatible
+	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
