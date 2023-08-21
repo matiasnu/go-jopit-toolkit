@@ -11,7 +11,7 @@ require (
 
 require (
 	firebase.google.com/go v3.13.0+incompatible
-	google.golang.org/api v0.137.0
+	google.golang.org/api v0.138.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
