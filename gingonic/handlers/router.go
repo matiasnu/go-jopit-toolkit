@@ -39,7 +39,6 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	if conf.EnableResponseCompressionSupport {
 		router.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
-
 	if !conf.DisableCommonApiFilter {
 		router.Use(CommonAPiFilter(!conf.DisableCommonApiFilterErrorLog))
 	}
