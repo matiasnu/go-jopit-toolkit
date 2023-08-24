@@ -6,7 +6,6 @@ import (
 
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, headerauthorization")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
 		c.Writer.Header().Set("Vary", "Origin")
