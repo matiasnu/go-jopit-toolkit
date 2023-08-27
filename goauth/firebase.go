@@ -87,7 +87,6 @@ func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 		if header == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "Header Authorization is mandatory.")
 			return
 		}
 
