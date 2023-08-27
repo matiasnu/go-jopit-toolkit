@@ -84,7 +84,7 @@ func GetEmailFromUserID(c *gin.Context) (string, error) {
 
 func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		header := c.GetHeader("HeaderAuthorization")
+		header := c.GetHeader("Authorization")
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := fbClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
@@ -159,7 +159,7 @@ func GetUserId(c *gin.Context) string {
 func MockAuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		userID := c.GetHeader("HeaderAuthorization")
+		userID := c.GetHeader("Authorization")
 		if userID == "" {
 			userID = UserIDMock
 		}
