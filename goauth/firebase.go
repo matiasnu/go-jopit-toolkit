@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 	"sync"
 
@@ -85,10 +86,15 @@ func GetEmailFromUserID(c *gin.Context) (string, error) {
 func AuthWithFirebase() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
+		if header == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "Header Authorization is mandatory.")
+			return
+		}
+
 		idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
 		decodedToken, err := fbClient.AuthClient.VerifyIDToken(context.Background(), idToken)
 		if err != nil {
-			c.AbortWithStatusJSON(401, err.Error())
+			c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
 			return
 		}
 
