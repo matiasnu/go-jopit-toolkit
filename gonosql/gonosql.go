@@ -11,7 +11,7 @@ type Repository interface {
 	InsertOne(ctx context.Context, storage *mongo.Collection, models interface{}) (*mongo.InsertOneResult, error)
 	GetByKey(ctx context.Context, storage *mongo.Collection, key, value string) (*mongo.Cursor, error)
 	GetByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) (*mongo.Cursor, error)
-	Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.SingleResult
+	Get(ctx context.Context, storage *mongo.Collection, id string) (*mongo.SingleResult, error)
 	GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error)
 	GetByIDs(ctx context.Context, storage *mongo.Collection, ids []string) (*mongo.Cursor, error)
 	Delete(ctx context.Context, storage *mongo.Collection, id string) (*mongo.DeleteResult, error)
@@ -35,14 +35,13 @@ func GetByFilter(ctx context.Context, storage *mongo.Collection, filter bson.M) 
 	return storage.Find(ctx, filter)
 }
 
-func Get(ctx context.Context, storage *mongo.Collection, id string) *mongo.SingleResult {
+func Get(ctx context.Context, storage *mongo.Collection, id string) (*mongo.SingleResult, error) {
 	// TODO add findOneOptions in method
 	primitiveID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		// TODO return err? log?
-		return nil
+		return nil, err
 	}
-	return storage.FindOne(ctx, bson.M{"_id": primitiveID})
+	return storage.FindOne(ctx, bson.M{"_id": primitiveID}), nil
 }
 
 func GetAll(ctx context.Context, storage *mongo.Collection) (*mongo.Cursor, error) {
