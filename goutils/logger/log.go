@@ -61,7 +61,7 @@ func (r *requestLogger) getResponseTimeMilliseconds() int64 {
 }
 
 func (r *requestLogger) setRequestValues(c *gin.Context, requestName string) {
-	r.Values["request_user_id"] = c.Request.Header.Get("HeaderAuthorization")
+	r.Values["request_user_id"] = c.Request.Header.Get("Authorization")
 	r.Values["request_name"] = requestName
 	r.Values["request_method"] = c.Request.Method
 	r.Values["request_body_size"] = strconv.Itoa(int(c.Request.ContentLength))
