@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	jsonLib "github.com/json-iterator/go"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"github.com/matiasnu/go-jopit-toolkit/rest"
@@ -213,4 +214,29 @@ func init() {
 	}
 
 	useMock = !(os.Getenv("GO_ENVIRONMENT") == "production")
+}
+
+func PasswordMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		headerUsername := c.GetHeader("admin_username")
+		if headerUsername == "" {
+			c.AbortWithError(422, fmt.Errorf("username is empty, please provide one"))
+			return
+		}
+
+		headerPassword := c.GetHeader("admin_password")
+		if headerPassword == "" {
+			c.AbortWithError(422, fmt.Errorf("password is empty, please provide one"))
+			return
+		}
+
+		if os.Getenv("ADMIN_PASSWORD") == "" {
+			c.AbortWithError(500, fmt.Errorf("password sectret missing"))
+			return
+		}
+
+		c.Set("admin_username", headerUsername)
+		c.Next()
+	}
 }
