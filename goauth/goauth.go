@@ -216,18 +216,43 @@ func init() {
 	useMock = !(os.Getenv("GO_ENVIRONMENT") == "production")
 }
 
-func PasswordMiddleware() gin.HandlerFunc {
+type passwordMiddleware struct {
+	username string
+	password string
+}
+
+func (pmw *passwordMiddleware) setPassword(pwd string) {
+	pmw.password = pwd
+}
+
+func (pmw *passwordMiddleware) setUsernane(usr string) {
+	pmw.password = usr
+}
+
+func NewPasswordMiddleware() (passwordMiddleware, error) {
+
+	psmd := passwordMiddleware{}
+
+	password := os.Getenv("ADMIN_PASSWORD")
+	username := os.Getenv("ADMIN_USERNAME")
+
+	if username == "" {
+		return passwordMiddleware{}, fmt.Errorf("admin_username is not setted in the repository")
+	} else {
+		psmd.setUsernane(username)
+	}
+
+	if password == "" {
+		return passwordMiddleware{}, fmt.Errorf("admin_password is not setted in the repository")
+	} else {
+		psmd.setPassword(password)
+	}
+
+	return psmd, nil
+}
+
+func PasswordMiddleware(pmw *passwordMiddleware) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
-		if os.Getenv("ADMIN_PASSWORD") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is not setted in the repository")
-			return
-		}
-
-		if os.Getenv("ADMIN_USERNAME") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "username is not setted in the repository")
-			return
-		}
 
 		headerUsername := c.GetHeader("admin_username")
 		if headerUsername == "" {
@@ -239,6 +264,14 @@ func PasswordMiddleware() gin.HandlerFunc {
 		if headerPassword == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is empty, please provide one")
 			return
+		}
+
+		if headerUsername != pmw.username {
+			c.Status(401)
+		}
+
+		if headerPassword != pmw.password {
+			c.Status(401)
 		}
 
 		c.Set("admin_username", headerUsername)
