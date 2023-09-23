@@ -220,12 +220,12 @@ func PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if os.Getenv("ADMIN_PASSWORD") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password sectret missing"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password is not setted in the repository"))
 			return
 		}
 
 		if os.Getenv("ADMIN_USERNAME") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password sectret missing"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("username is not setted in the repository"))
 			return
 		}
 
