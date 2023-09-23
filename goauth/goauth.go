@@ -220,29 +220,24 @@ func PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if os.Getenv("ADMIN_PASSWORD") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password is not setted in the repository"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is not setted in the repository")
 			return
 		}
 
 		if os.Getenv("ADMIN_USERNAME") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("username is not setted in the repository"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "username is not setted in the repository")
 			return
 		}
 
 		headerUsername := c.GetHeader("admin_username")
 		if headerUsername == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("username is empty, please provide one"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "username is empty, please provide one")
 			return
 		}
 
 		headerPassword := c.GetHeader("admin_password")
 		if headerPassword == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password is empty, please provide one"))
-			return
-		}
-
-		if os.Getenv("ADMIN_PASSWORD") == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, fmt.Errorf("password sectret missing"))
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is empty, please provide one")
 			return
 		}
 
