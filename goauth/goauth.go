@@ -270,12 +270,12 @@ func PasswordMiddleware() gin.HandlerFunc {
 		}
 
 		if headerUsername != pwdMiddCredentials.username {
-			c.Status(401)
+			c.AbortWithStatus(401)
 			return
 		}
 
 		if headerPassword != pwdMiddCredentials.password {
-			c.Status(401)
+			c.AbortWithStatus(401)
 			return
 		}
 
