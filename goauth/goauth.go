@@ -234,6 +234,8 @@ func (pmw *passwordMiddleware) setUsernane(usr string) {
 
 func NewPasswordMiddleware() error {
 
+	pwdMiddCredentials = &passwordMiddleware{}
+
 	password := os.Getenv("ADMIN_PASSWORD")
 	username := os.Getenv("ADMIN_USERNAME")
 
