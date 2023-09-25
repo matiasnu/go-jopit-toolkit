@@ -29,11 +29,14 @@ type authRequestData struct {
 }
 
 var (
-	restClient     *rest.RequestBuilder
-	privateParams  = [8]string{"caller.id", "caller.scopes", "caller.status", "client.id", "admin.id", "caller.siteId", "operator.id", "root.id"}
-	privateHeaders = [10]string{"X-Caller-Id", "X-Caller-Scopes", "X-Caller-Status", "X-Client-Id", "X-Test-Token", "X-Admin-Id", "X-Caller-SiteId", "X-Operator-Id", "X-Detached-Id", "X-Root-Id"}
-	useMock        bool
+	restClient         *rest.RequestBuilder
+	privateParams      = [8]string{"caller.id", "caller.scopes", "caller.status", "client.id", "admin.id", "caller.siteId", "operator.id", "root.id"}
+	privateHeaders     = [10]string{"X-Caller-Id", "X-Caller-Scopes", "X-Caller-Status", "X-Client-Id", "X-Test-Token", "X-Admin-Id", "X-Caller-SiteId", "X-Operator-Id", "X-Detached-Id", "X-Root-Id"}
+	useMock            bool
+	pwdMiddCredentials *passwordMiddleware
 )
+
+var ()
 
 type authOptions struct {
 	allowNonActiveUser bool
@@ -229,29 +232,27 @@ func (pmw *passwordMiddleware) setUsernane(usr string) {
 	pmw.password = usr
 }
 
-func NewPasswordMiddleware() (passwordMiddleware, error) {
-
-	psmd := passwordMiddleware{}
+func NewPasswordMiddleware() error {
 
 	password := os.Getenv("ADMIN_PASSWORD")
 	username := os.Getenv("ADMIN_USERNAME")
 
 	if username == "" {
-		return passwordMiddleware{}, fmt.Errorf("admin_username is not setted in the repository")
+		return fmt.Errorf("%s", "admin_username is not setted in the repository")
 	} else {
-		psmd.setUsernane(username)
+		pwdMiddCredentials.setUsernane(username)
 	}
 
 	if password == "" {
-		return passwordMiddleware{}, fmt.Errorf("admin_password is not setted in the repository")
+		return fmt.Errorf("%s", "admin_password is not setted in the repository")
 	} else {
-		psmd.setPassword(password)
+		pwdMiddCredentials.setPassword(password)
 	}
 
-	return psmd, nil
+	return nil
 }
 
-func PasswordMiddleware(pmw *passwordMiddleware) gin.HandlerFunc {
+func PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		headerUsername := c.GetHeader("admin_username")
@@ -266,11 +267,11 @@ func PasswordMiddleware(pmw *passwordMiddleware) gin.HandlerFunc {
 			return
 		}
 
-		if headerUsername != pmw.username {
+		if headerUsername != pwdMiddCredentials.username {
 			c.Status(401)
 		}
 
-		if headerPassword != pmw.password {
+		if headerPassword != pwdMiddCredentials.password {
 			c.Status(401)
 		}
 
