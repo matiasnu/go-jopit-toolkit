@@ -229,7 +229,7 @@ func (pmw *passwordMiddleware) setPassword(pwd string) {
 }
 
 func (pmw *passwordMiddleware) setUsernane(usr string) {
-	pmw.password = usr
+	pmw.username = usr
 }
 
 func NewPasswordMiddleware() error {
