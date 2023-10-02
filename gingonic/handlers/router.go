@@ -64,6 +64,7 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 		router.Use(goauth.MockAuthWithFirebase())
 	}
 	if conf.EnableAdminPassword {
+		goauth.NewPasswordMiddleware()
 		router.Use(goauth.PasswordMiddleware())
 	}
 
