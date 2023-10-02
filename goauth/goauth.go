@@ -266,12 +266,12 @@ func PasswordMiddleware() gin.HandlerFunc {
 		}
 
 		if headerUsername != pwdMiddCredentials.username {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
 		if headerPassword != pwdMiddCredentials.password {
-			c.AbortWithStatus(401)
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 

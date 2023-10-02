@@ -65,7 +65,6 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	}
 	if conf.EnableAdminPassword {
 		goauth.NewPasswordMiddleware()
-		router.Use(goauth.PasswordMiddleware())
 	}
 
 	router.NoRoute(noRouteHandler)
