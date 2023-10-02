@@ -239,15 +239,13 @@ func NewPasswordMiddleware() error {
 
 	if username == "" {
 		return fmt.Errorf("%s", "admin_username is not setted in the repository")
-	} else {
-		pwdMiddCredentials.setUsernane(username)
 	}
+	pwdMiddCredentials.setUsernane(username)
 
 	if password == "" {
 		return fmt.Errorf("%s", "admin_password is not setted in the repository")
-	} else {
-		pwdMiddCredentials.setPassword(password)
 	}
+	pwdMiddCredentials.setPassword(password)
 
 	return nil
 }

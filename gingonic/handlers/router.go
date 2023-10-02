@@ -63,6 +63,9 @@ func CustomJopitRouter(conf JopitRouterConfig) *gin.Engine {
 	} else {
 		router.Use(goauth.MockAuthWithFirebase())
 	}
+	if conf.EnableAdminPassword {
+		router.Use(goauth.PasswordMiddleware())
+	}
 
 	router.NoRoute(noRouteHandler)
 	return router
@@ -87,6 +90,7 @@ type JopitRouterConfig struct {
 	DisableCancellationOnClientDisconnect bool
 	DisableFirebaseAuth                   bool
 	DisableCORS                           bool
+	EnableAdminPassword                   bool
 }
 
 func noRouteHandler(c *gin.Context) {
