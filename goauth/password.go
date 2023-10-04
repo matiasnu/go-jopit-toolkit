@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	oncePass           sync.Once
+	oncePassword       sync.Once
 	pwdMiddCredentials *passwordMiddleware
 )
 
@@ -67,7 +67,7 @@ func PasswordMiddleware() gin.HandlerFunc {
 }
 
 func init() {
-	once.Do(InitPasswordMiddleware)
+	oncePassword.Do(InitPasswordMiddleware)
 }
 
 func InitPasswordMiddleware() {
