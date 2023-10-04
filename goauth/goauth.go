@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	jsonLib "github.com/json-iterator/go"
 	"github.com/matiasnu/go-jopit-toolkit/goutils/apierrors"
 	"github.com/matiasnu/go-jopit-toolkit/rest"
@@ -29,11 +28,10 @@ type authRequestData struct {
 }
 
 var (
-	restClient         *rest.RequestBuilder
-	privateParams      = [8]string{"caller.id", "caller.scopes", "caller.status", "client.id", "admin.id", "caller.siteId", "operator.id", "root.id"}
-	privateHeaders     = [10]string{"X-Caller-Id", "X-Caller-Scopes", "X-Caller-Status", "X-Client-Id", "X-Test-Token", "X-Admin-Id", "X-Caller-SiteId", "X-Operator-Id", "X-Detached-Id", "X-Root-Id"}
-	useMock            bool
-	pwdMiddCredentials *passwordMiddleware
+	restClient     *rest.RequestBuilder
+	privateParams  = [8]string{"caller.id", "caller.scopes", "caller.status", "client.id", "admin.id", "caller.siteId", "operator.id", "root.id"}
+	privateHeaders = [10]string{"X-Caller-Id", "X-Caller-Scopes", "X-Caller-Status", "X-Client-Id", "X-Test-Token", "X-Admin-Id", "X-Caller-SiteId", "X-Operator-Id", "X-Detached-Id", "X-Root-Id"}
+	useMock        bool
 )
 
 type authOptions struct {
@@ -215,67 +213,4 @@ func init() {
 	}
 
 	useMock = !(os.Getenv("GO_ENVIRONMENT") == "production")
-}
-
-type passwordMiddleware struct {
-	username string
-	password string
-}
-
-func (pmw *passwordMiddleware) setPassword(pwd string) {
-	pmw.password = pwd
-}
-
-func (pmw *passwordMiddleware) setUsernane(usr string) {
-	pmw.username = usr
-}
-
-func NewPasswordMiddleware() error {
-
-	pwdMiddCredentials = &passwordMiddleware{}
-
-	password := os.Getenv("ADMIN_PASSWORD")
-	username := os.Getenv("ADMIN_USERNAME")
-
-	if username == "" {
-		return fmt.Errorf("%s", "admin_username is not setted in the repository")
-	}
-	pwdMiddCredentials.setUsernane(username)
-
-	if password == "" {
-		return fmt.Errorf("%s", "admin_password is not setted in the repository")
-	}
-	pwdMiddCredentials.setPassword(password)
-
-	return nil
-}
-
-func PasswordMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-
-		headerUsername := c.GetHeader("admin_username")
-		if headerUsername == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "username is empty, please provide one")
-			return
-		}
-
-		headerPassword := c.GetHeader("admin_password")
-		if headerPassword == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is empty, please provide one")
-			return
-		}
-
-		if headerUsername != pwdMiddCredentials.username {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		if headerPassword != pwdMiddCredentials.password {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-
-		c.Set("admin_username", headerUsername)
-		c.Next()
-	}
 }
