@@ -1,13 +1,12 @@
 package goauth
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"sync"
 
 	"github.com/gin-gonic/gin"
-	"github.com/matiasnu/go-jopit-toolkit/goutils/logger"
 )
 
 var (
@@ -78,12 +77,12 @@ func InitPasswordMiddleware() {
 	username := os.Getenv("ADMIN_USERNAME")
 
 	if username == "" {
-		logger.Errorf("admin_username is not setted in the repository", fmt.Errorf("missing credentuials value"))
+		log.Println("admin_username is not setted in the repository missing credentuials value")
 	}
 	pwdMiddCredentials.setUsernane(username)
 
 	if password == "" {
-		logger.Errorf("admin_password is not setted in the repository", fmt.Errorf("missing credentuials value"))
+		log.Println("admin_password is not setted in the repository missing credentuials value")
 	}
 
 	pwdMiddCredentials.setPassword(password)
