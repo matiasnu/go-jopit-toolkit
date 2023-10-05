@@ -38,13 +38,13 @@ func PasswordMiddleware() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 
-		headerUsername := c.GetHeader("admin_username")
+		headerUsername := c.GetHeader("Admin-Username")
 		if headerUsername == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "username is empty, please provide one")
 			return
 		}
 
-		headerPassword := c.GetHeader("admin_password")
+		headerPassword := c.GetHeader("Admin-Password")
 		if headerPassword == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, "password is empty, please provide one")
 			return
@@ -60,7 +60,7 @@ func PasswordMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("admin_username", headerUsername)
+		c.Set("Admin-Username", headerUsername)
 		c.Next()
 	}
 }
@@ -73,16 +73,16 @@ func InitPasswordMiddleware() {
 
 	pwdMiddCredentials = &passwordMiddleware{}
 
-	password := os.Getenv("ADMIN_PASSWORD")
-	username := os.Getenv("ADMIN_USERNAME")
+	password := os.Getenv("Admin-Password")
+	username := os.Getenv("Admin-Username")
 
 	if username == "" {
-		log.Println("admin_username is not setted in the repository missing credentuials value")
+		log.Println("Admin-Username is not setted in the repository missing credentuials value")
 	}
 	pwdMiddCredentials.setUsernane(username)
 
 	if password == "" {
-		log.Println("admin_password is not setted in the repository missing credentuials value")
+		log.Println("Admin-Password is not setted in the repository missing credentuials value")
 	}
 
 	pwdMiddCredentials.setPassword(password)
