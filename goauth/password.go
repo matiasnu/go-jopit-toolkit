@@ -73,8 +73,8 @@ func InitPasswordMiddleware() {
 
 	pwdMiddCredentials = &passwordMiddleware{}
 
-	password := os.Getenv("Admin-Password")
-	username := os.Getenv("Admin-Username")
+	password := os.Getenv("ADMIN_PASSWORD")
+	username := os.Getenv("ADMIN_USERNAME")
 
 	if username == "" {
 		log.Println("Admin-Username is not setted in the repository missing credentuials value")
