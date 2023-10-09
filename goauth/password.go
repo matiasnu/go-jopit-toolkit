@@ -32,10 +32,12 @@ func PasswordMiddleware() gin.HandlerFunc {
 
 		if pwdMiddCredentials.password == "" {
 			c.AbortWithStatus(http.StatusInternalServerError)
+			return
 		}
 
 		if pwdMiddCredentials.username == "" {
 			c.AbortWithStatus(http.StatusInternalServerError)
+			return
 		}
 
 		headerUsername := c.GetHeader("Admin-Username")
