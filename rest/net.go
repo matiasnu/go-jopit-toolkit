@@ -117,8 +117,6 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 
 		httpResp, responseErr = rb.getClient().Do(request)
 
-		fmt.Println("RESPONSE: ", *httpResp)
-
 		if rb.RetryStrategy != nil {
 			retryResp := rb.RetryStrategy.ShouldRetry(request, httpResp, responseErr, retries)
 			if retryResp.Retry() {
