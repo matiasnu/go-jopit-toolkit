@@ -60,6 +60,8 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 	result = new(Response)
 	requestURL = rb.BaseURL + requestURL
 
+	fmt.Println("REQUEST URL: ", requestURL)
+
 	// Marshal request to JSON or XML
 	body, err := rb.marshalReqBody(reqBody)
 	if err != nil {
@@ -67,12 +69,16 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 		return
 	}
 
+	fmt.Println("REQUEST BODY: ", string(body))
+
 	// Parse URL and to point to Mockup server if applicable
 	resourceURL, err := parseURL(requestURL)
 	if err != nil {
 		result.Err = err
 		return
 	}
+
+	fmt.Println("resourceURL: ", resourceURL)
 
 	// Response objects
 	var httpResp *http.Response
@@ -86,6 +92,9 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 			result.Err = err
 			return
 		}
+
+		fmt.Println("REQUEST: ", *request)
+		fmt.Println("TLS: ", *request.TLS)
 
 		// Set extra parameters
 		rb.setParams(request, requestURL)
@@ -108,6 +117,8 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 		}
 
 		httpResp, responseErr = rb.getClient().Do(request)
+
+		fmt.Println("RESPONSE: ", *httpResp)
 
 		if rb.RetryStrategy != nil {
 			retryResp := rb.RetryStrategy.ShouldRetry(request, httpResp, responseErr, retries)
