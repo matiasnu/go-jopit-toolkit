@@ -94,7 +94,6 @@ func (rb *RequestBuilder) doRequest(verb string, requestURL string, reqBody inte
 		}
 
 		fmt.Println("REQUEST: ", *request)
-		fmt.Println("TLS: ", *request.TLS)
 
 		// Set extra parameters
 		rb.setParams(request, requestURL)
