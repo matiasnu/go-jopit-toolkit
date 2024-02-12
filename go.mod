@@ -97,5 +97,5 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	go.mongodb.org/mongo-driver v1.13.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	gorm.io/gorm v1.25.5
+	gorm.io/gorm v1.25.7
 )
